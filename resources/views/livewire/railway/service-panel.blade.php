@@ -18,7 +18,35 @@
                     <div class="min-w-0 flex-1">
                         <div class="text-[18px] font-semibold text-rw-text truncate">{{ $name }}</div>
                     </div>
-                    <button type="button" @click="open = false" class="rw-icon-btn hover:rw-icon-btn-hover">
+
+                    {{-- Deploy + actions --}}
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" wire:click="deploy" wire:loading.attr="disabled" wire:target="deploy"
+                            class="rw-btn-primary hover:rw-btn-primary-hover">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <span wire:loading.remove wire:target="deploy">{{ $kind === 'database' ? 'Start' : 'Deploy' }}</span>
+                            <span wire:loading wire:target="deploy">Deploying…</span>
+                        </button>
+                        <div class="relative" x-data="{ open: false }">
+                            <button type="button" @click="open = !open" @click.outside="open = false" class="rw-icon-btn hover:rw-icon-btn-hover">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+                            </button>
+                            <div x-show="open" x-cloak x-transition.origin.top.right class="absolute right-0 top-9 z-50 w-48 rw-menu">
+                                @if ($kind === 'application')
+                                    <button type="button" wire:click="deploy(true)" @click="open = false" class="rw-menu-item hover:rw-menu-item-hover w-full">
+                                        <svg class="w-3.5 h-3.5 text-rw-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5"/></svg>
+                                        Redeploy (rebuild)
+                                    </button>
+                                @endif
+                                <button type="button" wire:click="restart" @click="open = false" class="rw-menu-item hover:rw-menu-item-hover w-full">
+                                    <svg class="w-3.5 h-3.5 text-rw-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+                                    Restart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" @click="open = false" class="rw-icon-btn hover:rw-icon-btn-hover shrink-0">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
                 </div>

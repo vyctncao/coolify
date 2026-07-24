@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Railway;
 
+use App\Actions\Database\RestartDatabase;
+use App\Actions\Database\StartDatabase;
+use App\Actions\Service\RestartService;
+use App\Actions\Service\StartService;
 use App\Jobs\DeleteResourceJob;
 use App\Models\Application;
 use App\Models\ApplicationDeploymentQueue;
@@ -115,6 +119,84 @@ class ServicePanel extends Component
     public function setTab(string $tab): void
     {
         $this->tab = $tab;
+    }
+
+    /**
+     * Deploy / start the resource. Applications queue a real deployment job;
+     * services and databases start via Coolify's Start actions.
+     */
+    public function deploy(bool $forceRebuild = false): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        try {
+            if ($this->resource instanceof Application) {
+                $this->authorize('deploy', $this->resource);
+
+                $uuid = new_public_id();
+                $result = queue_application_deployment(
+                    application: $this->resource,
+                    deployment_uuid: $uuid,
+                    force_rebuild: $forceRebuild,
+                );
+                $status = $result['status'] ?? '';
+                if ($status === 'queue_full') {
+                    $this->dispatch('error', 'Deployment queue is full.');
+
+                    return;
+                }
+                if ($status === 'skipped') {
+                    $this->dispatch('error', 'Deployment skipped: '.($result['message'] ?? 'no changes'));
+
+                    return;
+                }
+
+                $this->dispatch('success', 'Deployment queued.');
+                $this->tab = 'deployments';
+                $this->loadResource();
+                $deployment = ApplicationDeploymentQueue::where('deployment_uuid', $uuid)->first();
+                if ($deployment) {
+                    $this->openDeploymentLogs($deployment->id);
+                }
+            } elseif ($this->resource instanceof Service) {
+                $this->authorize('update', $this->resource);
+                StartService::run(service: $this->resource, pullLatestImages: true);
+                $this->dispatch('success', 'Service deployment started.');
+            } else {
+                $this->authorize('update', $this->resource);
+                StartDatabase::run($this->resource);
+                $this->dispatch('success', 'Database is starting.');
+            }
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'Could not deploy: '.$e->getMessage());
+        }
+    }
+
+    public function restart(): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        try {
+            $this->authorize('update', $this->resource);
+            if ($this->resource instanceof Application) {
+                queue_application_deployment(
+                    application: $this->resource,
+                    deployment_uuid: new_public_id(),
+                    restart_only: true,
+                );
+            } elseif ($this->resource instanceof Service) {
+                RestartService::run($this->resource, true);
+            } else {
+                RestartDatabase::run($this->resource);
+            }
+            $this->dispatch('success', 'Restart triggered.');
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'Could not restart: '.$e->getMessage());
+        }
     }
 
     /**
