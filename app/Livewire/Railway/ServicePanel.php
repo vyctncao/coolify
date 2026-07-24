@@ -86,6 +86,8 @@ class ServicePanel extends Component
 
     public bool $isApplication = false;
 
+    public string $advancedSection = 'persistent-storage';
+
     public function mount(Environment $environment, Project $project): void
     {
         $this->environment = $environment;
@@ -220,6 +222,7 @@ class ServicePanel extends Component
     {
         $this->isApplication = $resource instanceof Application;
         $this->settingsSection = $this->isApplication ? 'source' : 'general';
+        $this->advancedSection = $this->isApplication ? 'persistent-storage' : 'resource-limits';
         $this->settingsName = (string) $resource->name;
         $this->settingsDescription = $resource->description;
         $this->settingsDomains = $resource->fqdn ?? null;
@@ -238,6 +241,11 @@ class ServicePanel extends Component
     public function setSettingsSection(string $section): void
     {
         $this->settingsSection = $section;
+    }
+
+    public function setAdvancedSection(string $section): void
+    {
+        $this->advancedSection = $section;
     }
 
     public function saveSettings(): void

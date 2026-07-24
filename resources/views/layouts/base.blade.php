@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <script>
-    // Immediate theme application - runs before any rendering
+    // The Railway UI is dark-only. Force dark so Coolify's classic components
+    // (which rely on `dark:` variants) render correctly inside the Railway chrome
+    // regardless of the user's OS/browser theme preference.
     (function () {
-        const t = localStorage.theme || 'dark';
-        const d = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-        document.documentElement.classList[d ? 'add' : 'remove']('dark');
-        document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light');
+        try { localStorage.theme = 'dark'; } catch (e) {}
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
     })();
 </script>
 
@@ -205,7 +206,33 @@
         let checkIfIamDeadInterval = null;
 
         function copyToClipboard(text) {
-            navigator?.clipboard?.writeText(text) && window.Livewire.dispatch('success', 'Copied to clipboard.');
+            const notify = () => window.Livewire?.dispatch('success', 'Copied to clipboard.');
+            // navigator.clipboard is only available in secure contexts (HTTPS / localhost).
+            // On plain-HTTP instances it is undefined, so fall back to execCommand.
+            if (window.isSecureContext && navigator?.clipboard?.writeText) {
+                navigator.clipboard.writeText(text).then(notify).catch(() => fallbackCopyToClipboard(text, notify));
+            } else {
+                fallbackCopyToClipboard(text, notify);
+            }
+        }
+        function fallbackCopyToClipboard(text, done) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.top = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, ta.value.length);
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok && done) {
+                    done();
+                }
+            } catch (e) {
+                // no-op: clipboard genuinely unavailable
+            }
         }
         document.addEventListener('livewire:init', () => {
             window.Livewire.on('reloadWindow', (timeout) => {

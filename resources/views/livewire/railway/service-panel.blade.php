@@ -5,7 +5,8 @@
 
         {{-- Slide-over --}}
         <aside class="fixed inset-y-0 right-0 z-50 w-full max-w-[680px] flex flex-col rw-panel transition-transform duration-200 ease-out"
-            :class="open ? 'translate-x-0' : 'translate-x-full'">
+            :class="open ? 'translate-x-0' : 'translate-x-full'"
+            @wheel.stop @mousedown.stop @contextmenu.stop>
 
             @if ($selectedUuid)
                 {{-- Header --}}
@@ -24,7 +25,7 @@
 
                 {{-- Tabs --}}
                 @php
-                    $tabs = ['deployments' => 'Deployments', 'variables' => 'Variables', 'metrics' => 'Metrics', 'console' => 'Console', 'settings' => 'Settings'];
+                    $tabs = ['deployments' => 'Deployments', 'variables' => 'Variables', 'metrics' => 'Metrics', 'console' => 'Console', 'settings' => 'Settings', 'advanced' => 'Advanced'];
                 @endphp
                 <div class="flex items-center gap-5 px-6 border-b" style="border-color: var(--color-rw-border);">
                     @foreach ($tabs as $key => $label)
@@ -202,6 +203,79 @@
                                 </section>
                             </div>
                             @break
+
+                        @case('advanced')
+                            @php
+                                $advSections = $isApplication ? [
+                                    'persistent-storage' => 'Persistent Storage',
+                                    'servers' => 'Servers',
+                                    'scheduled-tasks' => 'Scheduled Tasks',
+                                    'webhooks' => 'Webhooks',
+                                    'previews' => 'Preview Deployments',
+                                    'healthcheck' => 'Healthcheck',
+                                    'rollback' => 'Rollback',
+                                    'resource-limits' => 'Resource Limits',
+                                    'resource-operations' => 'Resource Operations',
+                                    'advanced' => 'Advanced',
+                                    'tags' => 'Tags',
+                                ] : [
+                                    'persistent-storage' => 'Persistent Storage',
+                                    'servers' => 'Servers',
+                                    'webhooks' => 'Webhooks',
+                                    'healthcheck' => 'Healthcheck',
+                                    'resource-limits' => 'Resource Limits',
+                                    'resource-operations' => 'Resource Operations',
+                                    'tags' => 'Tags',
+                                ];
+                            @endphp
+                            <div class="flex gap-6">
+                                <nav class="w-44 shrink-0 flex flex-col gap-0.5">
+                                    @foreach ($advSections as $k => $label)
+                                        <button type="button" wire:click="setAdvancedSection('{{ $k }}')"
+                                            class="rw-nav-item hover:rw-nav-item-hover text-left {{ $advancedSection === $k ? 'rw-nav-item-active' : '' }}">{{ $label }}</button>
+                                    @endforeach
+                                </nav>
+                                <div class="flex-1 min-w-0" wire:key="adv-body-{{ $selectedUuid }}-{{ $advancedSection }}">
+                                    @if ($resource)
+                                        @switch($advancedSection)
+                                            @case('persistent-storage')
+                                                <livewire:project.service.storage :resource="$resource" :key="'adv-store-'.$selectedUuid" />
+                                                @break
+                                            @case('servers')
+                                                <livewire:project.shared.destination :resource="$resource" :key="'adv-srv-'.$selectedUuid" />
+                                                @break
+                                            @case('scheduled-tasks')
+                                                <livewire:project.shared.scheduled-task.all :resource="$resource" :key="'adv-task-'.$selectedUuid" />
+                                                @break
+                                            @case('webhooks')
+                                                <livewire:project.shared.webhooks :resource="$resource" :key="'adv-wh-'.$selectedUuid" />
+                                                @break
+                                            @case('previews')
+                                                @if ($isApplication)<livewire:project.application.previews :application="$resource" :key="'adv-prev-'.$selectedUuid" />@endif
+                                                @break
+                                            @case('healthcheck')
+                                                <livewire:project.shared.health-checks :resource="$resource" :key="'adv-hc-'.$selectedUuid" />
+                                                @break
+                                            @case('rollback')
+                                                @if ($isApplication)<livewire:project.application.rollback :application="$resource" :key="'adv-rb-'.$selectedUuid" />@endif
+                                                @break
+                                            @case('resource-limits')
+                                                <livewire:project.shared.resource-limits :resource="$resource" :key="'adv-rl-'.$selectedUuid" />
+                                                @break
+                                            @case('resource-operations')
+                                                <livewire:project.shared.resource-operations :resource="$resource" :key="'adv-ro-'.$selectedUuid" />
+                                                @break
+                                            @case('advanced')
+                                                @if ($isApplication)<livewire:project.application.advanced :application="$resource" :key="'adv-ad-'.$selectedUuid" />@endif
+                                                @break
+                                            @case('tags')
+                                                <livewire:project.shared.tags :resource="$resource" :key="'adv-tag-'.$selectedUuid" />
+                                                @break
+                                        @endswitch
+                                    @endif
+                                </div>
+                            </div>
+                            @break
                     @endswitch
                 </div>
             @endif
@@ -221,7 +295,8 @@
             @endphp
             <div class="fixed inset-0 z-[60] flex">
                 <div class="flex-1" wire:click="closeDeploymentLogs"></div>
-                <aside class="w-full max-w-[1040px] flex flex-col border-l" style="border-color: var(--color-rw-border); background: var(--color-rw-surface);">
+                <aside class="w-full max-w-[1040px] flex flex-col border-l" style="border-color: var(--color-rw-border); background: var(--color-rw-surface);"
+                    @wheel.stop @mousedown.stop @contextmenu.stop>
                     {{-- Header --}}
                     <div class="px-6 pt-6 pb-3">
                         <div class="flex items-center gap-3">
