@@ -102,7 +102,7 @@
                 $addItems = [
                     ['label' => 'GitHub Repo', 'icon' => 'github', 'href' => $createUrl.'?type=private-gh-app'],
                     ['label' => 'Template', 'icon' => 'template', 'href' => $createUrl],
-                    ['label' => 'Database', 'icon' => 'database', 'href' => $createUrl.'?type=postgresql'],
+                    ['label' => 'Database', 'icon' => 'database', 'action' => 'database', 'href' => $createUrl.'?type=postgresql'],
                     ['label' => 'Docker Image', 'icon' => 'docker', 'href' => $createUrl.'?type=docker-image'],
                     ['label' => 'Volume', 'icon' => 'volume', 'href' => $createUrl],
                     ['label' => 'Function', 'icon' => 'function', 'href' => $createUrl],
@@ -116,7 +116,8 @@
                 x-bind:style="`left: ${ctxMenu.x}px; top: ${ctxMenu.y}px;`">
                 <div class="px-2.5 py-2 text-[12px] font-medium text-rw-subtle">Add New Service</div>
                 @foreach ($addItems as $it)
-                    <a href="{{ $it['href'] }}" wire:navigate @click="closeContextMenu()"
+                    <a href="{{ ($it['action'] ?? false) ? '#' : $it['href'] }}"
+                        @if ($it['action'] ?? false) @click.prevent="activeCreate='{{ $it['action'] }}'; closeContextMenu()" @else wire:navigate @click="closeContextMenu()" @endif
                         class="rw-menu-item hover:rw-menu-item-hover !py-2 gap-3">
                         <span class="inline-flex items-center justify-center w-5 h-5 text-rw-muted shrink-0">
                             @switch($it['icon'])
@@ -148,6 +149,38 @@
                         <span class="text-[14px] text-rw-text">{{ $it['label'] }}</span>
                     </a>
                 @endforeach
+            </div>
+
+            {{-- Database picker popup (native create) --}}
+            <div x-show="activeCreate === 'database'" x-cloak x-transition.opacity.duration.100ms
+                @keydown.escape.window="activeCreate = null"
+                class="absolute inset-0 z-[55] flex items-start justify-center pt-24"
+                @click.self="activeCreate = null" @wheel.stop @mousedown.stop @contextmenu.stop>
+                @php
+                    $dbTypes = [
+                        ['postgresql', 'PostgreSQL'], ['redis', 'Redis'], ['mongodb', 'MongoDB'], ['mysql', 'MySQL'],
+                        ['mariadb', 'MariaDB'], ['keydb', 'KeyDB'], ['dragonfly', 'Dragonfly'], ['clickhouse', 'ClickHouse'],
+                    ];
+                @endphp
+                <div class="w-[460px] rw-menu !p-0 overflow-hidden" @click.stop>
+                    <div class="flex items-center gap-2 px-3 h-12 border-b" style="border-color: var(--color-rw-border);">
+                        <button type="button" @click="activeCreate = null" class="rw-icon-btn hover:rw-icon-btn-hover shrink-0">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+                        </button>
+                        <input type="text" placeholder="Choose a database…" class="flex-1 bg-transparent text-[14px] text-rw-text placeholder:text-rw-subtle focus:outline-none border-0 p-0" />
+                    </div>
+                    <div class="p-1.5 max-h-[420px] overflow-y-auto scrollbar" wire:loading.class="opacity-50">
+                        @foreach ($dbTypes as [$k, $label])
+                            <button type="button" wire:click="createDatabase('{{ $k }}')" @click="activeCreate = null"
+                                class="rw-menu-item hover:rw-menu-item-hover !py-2.5 gap-3 w-full text-left">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-md shrink-0" style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
+                                    <x-railway.resource-icon type="database" size="w-3.5 h-3.5" />
+                                </span>
+                                <span class="text-[14px] text-rw-text">{{ $label }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             {{-- Service detail slide-over --}}

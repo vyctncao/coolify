@@ -5,6 +5,7 @@ namespace App\Livewire\Railway;
 use App\Models\Environment;
 use App\Models\Project;
 use App\Models\RailwayCanvasPosition;
+use App\Models\StandaloneDocker;
 use App\Support\RailwayResourceMapper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -75,6 +76,85 @@ class Canvas extends Component
             );
         } catch (\Throwable $e) {
             // Layout persistence is non-critical; the client keeps a localStorage copy.
+        }
+    }
+
+    /**
+     * The default Docker destination for new resources in this environment:
+     * reuse one already used here, else the first destination on a team server.
+     */
+    protected function defaultDestination(): ?StandaloneDocker
+    {
+        try {
+            $existing = RailwayResourceMapper::resourcesFor($this->environment)
+                ->first(fn ($r) => $r->destination instanceof StandaloneDocker);
+            if ($existing && $existing->destination) {
+                return $existing->destination;
+            }
+
+            foreach (currentTeam()->servers()->get() as $server) {
+                $docker = $server->standaloneDockers()->first();
+                if ($docker) {
+                    return $docker;
+                }
+            }
+        } catch (\Throwable $e) {
+            // fall through
+        }
+
+        return StandaloneDocker::query()
+            ->whereHas('server', fn ($q) => $q->whereIn('team_id', auth()->user()->teams->pluck('id')))
+            ->first();
+    }
+
+    /**
+     * Create a standalone database of the given type directly on the canvas
+     * (Railway-style: pick a type, it appears — no wizard page).
+     */
+    public function createDatabase(string $type): void
+    {
+        try {
+            $this->authorize('createAnyResource');
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'You are not allowed to create resources.');
+
+            return;
+        }
+
+        $destination = $this->defaultDestination();
+        if (! $destination) {
+            $this->dispatch('error', 'No server/Docker destination available. Add a server first.');
+
+            return;
+        }
+
+        try {
+            $envId = $this->environment->id;
+            $database = match ($type) {
+                'postgresql' => create_standalone_postgresql($envId, $destination),
+                'redis' => create_standalone_redis($envId, $destination),
+                'mongodb' => create_standalone_mongodb($envId, $destination),
+                'mysql' => create_standalone_mysql($envId, $destination),
+                'mariadb' => create_standalone_mariadb($envId, $destination),
+                'keydb' => create_standalone_keydb($envId, $destination),
+                'dragonfly' => create_standalone_dragonfly($envId, $destination),
+                'clickhouse' => create_standalone_clickhouse($envId, $destination),
+                default => null,
+            };
+
+            if (! $database) {
+                $this->dispatch('error', 'Unknown database type.');
+
+                return;
+            }
+
+            // Drop cached relations so the re-render's buildNodes() picks up the new node.
+            $this->environment->unsetRelations();
+
+            $this->dispatch('success', str($type)->title().' database created.');
+            $this->dispatch('openServicePanel', uuid: $database->uuid, kind: 'database');
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'Could not create database: '.$e->getMessage());
         }
     }
 

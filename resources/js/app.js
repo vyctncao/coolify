@@ -35,6 +35,7 @@ document.addEventListener('alpine:init', () => {
         dragging: null,
         movedDuringDrag: false,
         ctxMenu: { open: false, x: 0, y: 0 },
+        activeCreate: null,
         last: { x: 0, y: 0 },
         storeKey: 'rwpos:' + config.envUuid,
 
