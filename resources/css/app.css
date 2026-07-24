@@ -13,7 +13,11 @@
 
 @source '../../storage/framework/views/*.php';
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Dark-only app: `dark:` utilities always apply (no dependency on the `.dark`
+   class), so classic Coolify components render dark even in a stale session
+   where `.dark` never got set on <html>. :root is always present, so this
+   matches every element unconditionally. */
+@custom-variant dark (&:where(:root, :root *));
 
 @theme {
     --font-sans: 'Geist Sans', Inter, sans-serif;
