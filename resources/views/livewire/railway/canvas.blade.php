@@ -69,7 +69,17 @@
                         </div>
                         {{-- Footer --}}
                         <div class="mt-3">
-                            <x-railway.status-dot :status="$node['status']" />
+                            @if ($node['deployStatus'])
+                                <div class="inline-flex items-center gap-2"
+                                    x-data="{ start: {{ (int) ($node['deployStartedMs'] ?? 0) }}, elapsed: '0:00' }"
+                                    x-init="const f = () => { const s = Math.max(0, Math.floor((Date.now() - start) / 1000)); elapsed = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }; f(); setInterval(f, 1000);">
+                                    <span class="rw-dot rw-dot-degraded"></span>
+                                    <span class="text-[13px] text-warning font-medium">{{ $node['deployStatus'] === 'building' ? 'Building' : 'Queued' }}</span>
+                                    <span class="text-[13px] text-rw-subtle font-mono tabular-nums" x-text="elapsed"></span>
+                                </div>
+                            @else
+                                <x-railway.status-dot :status="$node['status']" />
+                            @endif
                         </div>
                     </div>
                 @endforeach

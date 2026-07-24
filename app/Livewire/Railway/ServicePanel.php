@@ -169,6 +169,9 @@ class ServicePanel extends Component
                 StartDatabase::run($this->resource);
                 $this->dispatch('success', 'Database is starting.');
             }
+
+            // Tell the canvas to refresh so the node shows Building/Queued immediately.
+            $this->dispatch('deploymentQueued');
         } catch (\Throwable $e) {
             $this->dispatch('error', 'Could not deploy: '.$e->getMessage());
         }

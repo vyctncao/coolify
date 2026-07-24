@@ -111,6 +111,8 @@ final class RailwayResourceMapper
      */
     public static function toNode(Model $resource, string $projectUuid, string $environmentUuid): array
     {
+        $deploy = self::activeDeployment($resource);
+
         return [
             'id' => $resource->uuid,
             'name' => $resource->name,
@@ -120,6 +122,39 @@ final class RailwayResourceMapper
             'kind' => self::kind($resource),
             'icon' => self::iconType($resource),
             'href' => self::href($resource, $projectUuid, $environmentUuid),
+            'deployStatus' => $deploy['status'] ?? null,
+            'deployStartedMs' => $deploy['startedMs'] ?? null,
         ];
+    }
+
+    /**
+     * The in-flight deployment for a resource, for the node's Building/Queued timer.
+     * Only applications have a deployment queue.
+     *
+     * @return array{status: string, startedMs: int}|null
+     */
+    public static function activeDeployment(Model $resource): ?array
+    {
+        if (class_basename($resource) !== 'Application' || ! method_exists($resource, 'deployment_queue')) {
+            return null;
+        }
+
+        try {
+            $deployment = $resource->deployment_queue()
+                ->whereIn('status', ['queued', 'in_progress'])
+                ->orderByDesc('created_at')
+                ->first();
+
+            if (! $deployment) {
+                return null;
+            }
+
+            return [
+                'status' => $deployment->status === 'in_progress' ? 'building' : 'queued',
+                'startedMs' => (int) (optional($deployment->created_at)->getTimestampMs() ?? 0),
+            ];
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }
