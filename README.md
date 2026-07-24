@@ -1,5 +1,71 @@
 <div align="center">
 
+# Railway UI for Coolify
+
+**A Railway‑style frontend built on [Coolify](https://coolify.io)'s self‑hostable PaaS backend.**
+
+Same servers, deployments, databases and env vars you already run in Coolify — reimagined as Railway's canvas‑first interface. No mocks: every screen is wired to Coolify's real data and actions.
+
+</div>
+
+![Architecture canvas](docs/railway-ui/02-canvas.png)
+
+## Highlights
+
+- **Projects → Environments dashboard** — every project with its environments as cards, live "N/N services online".
+- **Architecture canvas** — pannable / zoomable node graph (Alpine + SVG), drag‑to‑arrange with persisted positions, live status dots, right‑click **Add New Service**.
+- **Service slide‑over** — Deployments, Variables (inline editor), Metrics (real charts), Console, and a **native Settings** panel (Source / Networking / Build & Deploy / Danger) wired to the real backend.
+- **Per‑deployment log popup** — Details / Build / Deploy / HTTP / Network‑flow tabs with a live filter, colored log lines, and persisted logs.
+- **Observability, Logs, and full Project Settings** (General, Environments, Members with invites/roles, Danger).
+- **The whole classic Coolify UI still works** inside the Railway chrome, so no feature is lost while screens are ported to native Railway components.
+
+## Screens
+
+| Projects dashboard | Architecture canvas |
+| --- | --- |
+| ![Dashboard](docs/railway-ui/01-dashboard.png) | ![Canvas](docs/railway-ui/02-canvas.png) |
+
+| Add New Service (right‑click) | Deployments |
+| --- | --- |
+| ![Add service](docs/railway-ui/03-add-service-menu.png) | ![Deployments](docs/railway-ui/04-panel-deployments.png) |
+
+| Variables (inline) | Metrics |
+| --- | --- |
+| ![Variables](docs/railway-ui/05-panel-variables.png) | ![Metrics](docs/railway-ui/06-panel-metrics.png) |
+
+| Native Settings panel | Deployment logs popup |
+| --- | --- |
+| ![Settings](docs/railway-ui/07-panel-settings.png) | ![Deploy logs](docs/railway-ui/08-deployment-logs.png) |
+
+| Observability | Project settings |
+| --- | --- |
+| ![Observability](docs/railway-ui/09-observability.png) | ![Project settings](docs/railway-ui/11-project-settings.png) |
+
+## Run it locally
+
+```bash
+cp .env.development.example .env
+# set an app key + redis host
+sed -i '' "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env
+printf '\nREDIS_HOST=host.docker.internal\n' >> .env
+
+# base + dev override are BOTH required
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+# migrate + seed demo data (creates test@example.com / password)
+docker exec coolify php artisan migrate:fresh --seed
+```
+
+Then open **http://localhost:8000** (redirects to the Railway UI) and log in with `test@example.com` / `password`. The classic Coolify UI stays available at `/classic`.
+
+Tests: `docker exec coolify php artisan test --compact tests/v4/Feature/RailwayUiTest.php`
+
+---
+
+<sub>This fork adds the Railway UI on top of Coolify. Everything below is Coolify's original documentation.</sub>
+
+<div align="center">
+
 # Coolify
 An open-source & self-hostable Heroku / Netlify / Vercel alternative. 
 
