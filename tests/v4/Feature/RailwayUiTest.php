@@ -185,6 +185,52 @@ it('revokes a pending invitation', function () {
     $this->assertDatabaseMissing('team_invitations', ['id' => $invitation->id]);
 });
 
+it('adds a custom domain and surfaces the DNS records to configure', function () {
+    $this->server->update(['ip' => '203.0.113.10']);
+
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->set('newDomain', 'app.example.com')
+        ->call('addDomain')
+        ->assertSet('domains', ['https://app.example.com'])
+        ->assertSet('newDomain', '')
+        ->assertSet('dnsDomain', 'app.example.com');
+
+    expect($this->application->fresh()->fqdn)->toBe('https://app.example.com');
+});
+
+it('rejects an invalid custom domain without persisting it', function () {
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->set('newDomain', 'not-a-domain')
+        ->call('addDomain')
+        ->assertSet('domains', [])
+        ->assertSet('dnsDomain', null);
+
+    expect($this->application->fresh()->fqdn)->toBeNull();
+});
+
+it('removes a domain and clears the persisted fqdn', function () {
+    $this->application->update(['fqdn' => 'https://app.example.com']);
+
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->assertSet('domains', ['https://app.example.com'])
+        ->call('removeDomain', 0)
+        ->assertSet('domains', []);
+
+    expect($this->application->fresh()->fqdn)->toBeNull();
+});
+
 it('changes a member role and removes a member', function () {
     $member = User::factory()->create(['password' => Hash::make('test-password')]);
     $member->teams()->attach($this->team, ['role' => 'member']);

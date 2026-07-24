@@ -191,9 +191,43 @@
                                     @error('settingsName') <div class="text-[12px] text-rw-danger mb-2">{{ $message }}</div> @enderror
                                     <label class="block text-[12px] text-rw-muted mb-1.5 mt-3">Description</label>
                                     <input type="text" wire:model="settingsDescription" placeholder="Optional" class="{{ $rwInput }} mb-4" style="{{ $rwInputStyle }}" />
-                                    <label class="block text-[12px] text-rw-muted mb-1.5">Public Domains</label>
-                                    <input type="text" wire:model="settingsDomains" placeholder="https://app.example.com, https://www.example.com" class="{{ $rwInput }}" style="{{ $rwInputStyle }}" />
-                                    <div class="text-[11px] text-rw-subtle mt-1">Comma-separate multiple domains.</div>
+                                    <label class="block text-[12px] text-rw-muted mb-1.5">Public Networking</label>
+                                    <div class="text-[11px] text-rw-subtle mb-2">Access this resource over HTTP with the following domains.</div>
+                                    <div class="flex flex-col gap-1.5">
+                                        @forelse ($domains as $i => $domain)
+                                            @php $host = preg_replace('#^https?://#', '', $domain); @endphp
+                                            <div class="rw-node !flex-row items-center gap-2 !py-2.5">
+                                                <svg class="w-4 h-4 text-rw-subtle shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+                                                <a href="{{ $domain }}" target="_blank" rel="noopener" class="text-[13px] font-mono text-rw-text truncate flex-1 hover:text-rw-accent">{{ $host }}</a>
+                                                <button type="button" onclick="copyToClipboard('{{ $domain }}')" class="rw-icon-btn hover:rw-icon-btn-hover w-7 h-7" title="Copy">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                                                </button>
+                                                <button type="button" x-data @click="confirm('Remove {{ $host }}?') && $wire.removeDomain({{ $i }})" class="rw-icon-btn hover:rw-icon-btn-hover w-7 h-7 hover:text-rw-danger" title="Remove">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-1 0v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6"/></svg>
+                                                </button>
+                                            </div>
+                                        @empty
+                                            <div class="text-[12px] text-rw-subtle py-1">No public domains yet.</div>
+                                        @endforelse
+                                    </div>
+
+                                    {{-- Add custom domain --}}
+                                    <div class="mt-2" x-data="{ adding: false }">
+                                        <button type="button" x-show="!adding" @click="adding = true; $nextTick(() => $refs.dom?.focus())" class="rw-btn hover:rw-btn-hover">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                            Add Custom Domain
+                                        </button>
+                                        <div x-show="adding" x-cloak class="rw-node flex flex-col gap-2 !p-3">
+                                            <div class="text-[12px] font-semibold text-rw-text">Add Custom Domain</div>
+                                            <input x-ref="dom" type="text" wire:model="newDomain" placeholder="example.com" autocomplete="off"
+                                                @keydown.enter="$wire.addDomain(); adding = false"
+                                                class="{{ $rwInput }}" style="{{ $rwInputStyle }}" />
+                                            <div class="flex gap-2 justify-end">
+                                                <button type="button" @click="adding = false; $wire.set('newDomain', '')" class="rw-btn hover:rw-btn-hover !h-8 !text-[12px]">Cancel</button>
+                                                <button type="button" wire:click="addDomain" @click="adding = false" class="rw-btn-primary hover:rw-btn-primary-hover !h-8 !text-[12px]">Add Domain</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </section>
 
                                 {{-- Build (applications) --}}
@@ -440,6 +474,41 @@
                         @endswitch
                     </div>
                 </aside>
+            </div>
+        @endif
+
+        {{-- Configure DNS records popup (after adding a custom domain) --}}
+        @if ($dnsDomain)
+            <div class="fixed inset-0 z-[65] flex items-center justify-center" style="background: rgba(0,0,0,0.5);" @wheel.stop @mousedown.stop>
+                <div class="w-full max-w-[560px] rounded-xl border shadow-2xl" style="border-color: var(--color-rw-border); background: var(--color-rw-surface);" @click.stop>
+                    <div class="flex items-center justify-between px-6 pt-5 pb-1">
+                        <div class="text-[17px] font-semibold text-rw-text">Configure DNS Records</div>
+                        <button type="button" wire:click="dismissDns" class="rw-icon-btn hover:rw-icon-btn-hover">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    <div class="px-6 text-[13px] text-rw-muted">Add the following DNS record to <span class="text-rw-accent font-medium">{{ $dnsDomain }}</span></div>
+                    <div class="px-6 py-4">
+                        <div class="rounded-lg border overflow-hidden" style="border-color: var(--color-rw-border);">
+                            <div class="grid grid-cols-[70px_1fr_1.4fr] px-4 py-2 text-[11px] font-medium text-rw-subtle border-b" style="border-color: var(--color-rw-border);">
+                                <span>Type</span><span>Name</span><span>Value</span>
+                            </div>
+                            <div class="grid grid-cols-[70px_1fr_1.4fr] px-4 py-3 text-[13px] font-mono items-center">
+                                <span class="flex items-center gap-1.5 text-warning">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
+                                    A
+                                </span>
+                                <span class="text-rw-text truncate">@ &nbsp;<span class="text-rw-subtle">(or subdomain)</span></span>
+                                <span class="text-rw-text truncate">{{ $serverIp ?: 'your server IP' }}</span>
+                            </div>
+                        </div>
+                        <div class="text-[11px] text-rw-subtle mt-2">Point the domain's A record at the server; the reverse proxy will route &amp; issue TLS automatically once DNS propagates.</div>
+                    </div>
+                    <div class="flex items-center justify-between px-6 py-4 border-t" style="border-color: var(--color-rw-border);">
+                        <a href="https://coolify.io/docs/knowledge-base/dns" target="_blank" rel="noopener" class="text-[13px] text-rw-accent hover:underline">View Documentation</a>
+                        <button type="button" wire:click="dismissDns" class="rw-btn hover:rw-btn-hover">Dismiss</button>
+                    </div>
+                </div>
             </div>
         @endif
     </div>

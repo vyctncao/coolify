@@ -74,6 +74,16 @@ class ServicePanel extends Component
 
     public ?string $settingsDomains = null;
 
+    /** @var array<int, string> Public domains (fqdn list) for the domain manager. */
+    public array $domains = [];
+
+    public string $newDomain = '';
+
+    public ?string $serverIp = null;
+
+    /** Domain whose DNS-records popup is currently shown (null = closed). */
+    public ?string $dnsDomain = null;
+
     public ?string $settingsRepo = null;
 
     public ?string $settingsBranch = null;
@@ -311,6 +321,16 @@ class ServicePanel extends Component
         $this->settingsName = (string) $resource->name;
         $this->settingsDescription = $resource->description;
         $this->settingsDomains = $resource->fqdn ?? null;
+        $this->domains = filled($resource->fqdn)
+            ? array_values(array_filter(array_map('trim', explode(',', (string) $resource->fqdn))))
+            : [];
+        $this->dnsDomain = null;
+        $this->serverIp = null;
+        try {
+            $this->serverIp = optional(optional($resource->destination)->server)->ip;
+        } catch (\Throwable $e) {
+            $this->serverIp = null;
+        }
 
         if ($resource instanceof Application) {
             $this->settingsRepo = $resource->git_repository;
@@ -372,6 +392,82 @@ class ServicePanel extends Component
             $this->dispatch('success', 'Settings saved.');
         } catch (\Throwable $e) {
             $this->dispatch('error', 'Could not save settings.');
+        }
+    }
+
+    public function addDomain(): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        $raw = trim($this->newDomain);
+        if ($raw === '') {
+            return;
+        }
+
+        $domain = preg_match('#^https?://#', $raw) ? $raw : 'https://'.$raw;
+        $host = parse_url($domain, PHP_URL_HOST);
+        if (! $host || ! str_contains($host, '.')) {
+            $this->dispatch('error', 'Enter a valid domain, e.g. app.example.com');
+
+            return;
+        }
+        if (in_array($domain, $this->domains, true)) {
+            $this->dispatch('error', 'That domain is already added.');
+
+            return;
+        }
+
+        $this->domains[] = $domain;
+        if (! $this->persistDomains()) {
+            return;
+        }
+
+        $this->newDomain = '';
+        // For real custom domains, surface the DNS records the user must add.
+        if (! str_contains($host, 'sslip.io') && ! str_contains($host, 'localhost') && filled($this->serverIp)) {
+            $this->dnsDomain = $host;
+        }
+        $this->dispatch('success', 'Domain added.');
+    }
+
+    public function removeDomain(int $index): void
+    {
+        if (! isset($this->domains[$index])) {
+            return;
+        }
+
+        unset($this->domains[$index]);
+        $this->domains = array_values($this->domains);
+        if ($this->persistDomains()) {
+            $this->dispatch('success', 'Domain removed.');
+        }
+    }
+
+    public function dismissDns(): void
+    {
+        $this->dnsDomain = null;
+    }
+
+    protected function persistDomains(): bool
+    {
+        if (! $this->resource) {
+            return false;
+        }
+
+        try {
+            $this->authorize('update', $this->resource);
+            $fqdn = implode(',', $this->domains);
+            $this->resource->update(['fqdn' => $fqdn !== '' ? $fqdn : null]);
+            $this->fqdns = $this->domains;
+            $this->settingsDomains = $fqdn;
+
+            return true;
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'Could not update domains.');
+
+            return false;
         }
     }
 
