@@ -11,14 +11,7 @@
         <a href="{{ route('railway.projects') }}" wire:navigate class="rw-icon-btn hover:rw-icon-btn-hover -ml-1">
             <x-railway.logo size="w-5 h-5" />
         </a>
-        <div class="flex items-center gap-2 flex-1 min-w-0">
-            <span class="inline-block w-5 h-5 rounded-full shrink-0" style="background: linear-gradient(135deg,#8b5cf6,#e5484d);"></span>
-            <div class="min-w-0">
-                <div class="text-[13px] font-semibold text-rw-text truncate leading-tight">{{ $team->name }}</div>
-                <div class="text-[10px] font-medium text-rw-subtle uppercase tracking-wide leading-tight">Pro</div>
-            </div>
-            <svg class="w-3.5 h-3.5 text-rw-subtle shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </div>
+        <livewire:railway.team-switcher />
     </div>
 
     {{-- Primary nav --}}

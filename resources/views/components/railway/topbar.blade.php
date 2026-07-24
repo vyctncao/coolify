@@ -77,11 +77,7 @@
                 @endforeach
             </div>
             <div class="mt-1 pt-1 border-t" style="border-color: var(--color-rw-border);">
-                <a href="{{ route('project.environment.edit', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid]) }}" wire:navigate
-                    class="rw-menu-item hover:rw-menu-item-hover text-rw-accent">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                    New Environment
-                </a>
+                <livewire:railway.new-environment :project="$project" :key="'rw-newenv-'.$project->uuid" />
             </div>
         </div>
     </div>
