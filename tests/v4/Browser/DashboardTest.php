@@ -112,7 +112,7 @@ it('shows onboarding after first login', function () {
     $page->fill('email', 'test@example.com')
         ->fill('password', 'password')
         ->click('Login')
-        ->assertSee('Welcome to Coolify')
+        ->assertSee('Welcome to OpenRail')
         ->assertSee("Let's go!")
         ->assertSee('Skip Setup')
         ->screenshot();

@@ -111,7 +111,7 @@ class Actions extends Component
             return true;
         }
 
-        $this->dispatch('error', 'Something went wrong with the refund. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+        $this->dispatch('error', 'Something went wrong with the refund. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
         return true;
     }
@@ -133,7 +133,7 @@ class Actions extends Component
                 return true;
             }
 
-            $this->dispatch('error', 'Something went wrong with the refund. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+            $this->dispatch('error', 'Something went wrong with the refund. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
             return true;
         }
@@ -142,7 +142,7 @@ class Actions extends Component
         $subscription = $team->subscription;
 
         if (! $subscription?->stripe_subscription_id) {
-            $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+            $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
             return true;
         }
@@ -171,7 +171,7 @@ class Actions extends Component
         } catch (\Exception $e) {
             \Log::error("Immediate cancellation error for team {$team->id}: ".$e->getMessage());
 
-            $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+            $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
             return true;
         }
@@ -191,7 +191,7 @@ class Actions extends Component
             return true;
         }
 
-        $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+        $this->dispatch('error', 'Something went wrong with the cancellation. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
         return true;
     }
@@ -206,7 +206,7 @@ class Actions extends Component
             return true;
         }
 
-        $this->dispatch('error', 'Something went wrong resuming the subscription. Please <a href="'.config('constants.urls.contact').'" target="_blank" class="underline">contact us</a>.');
+        $this->dispatch('error', 'Something went wrong resuming the subscription. Please <a href="'.config('branding.urls.contact').'" target="_blank" class="underline">contact us</a>.');
 
         return true;
     }

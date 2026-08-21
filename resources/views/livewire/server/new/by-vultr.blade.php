@@ -5,9 +5,9 @@
         @if ($current_step === 1)
             <div class="flex flex-col w-full gap-4">
                 <div class="text-sm text-neutral-500 dark:text-neutral-400">
-                    Don't have a Vultr account? <a href="https://coolify.io/vultr" target="_blank"
+                    Don't have a Vultr account? <a href="https://openrail.io/vultr" target="_blank"
                         class="underline dark:text-white">Sign up here</a>.
-                    <span class="text-xs">Coolify's affiliate link - it supports both of us.</span>
+                    <span class="text-xs">OpenRail's affiliate link - it supports both of us.</span>
                 </div>
                 @if ($available_tokens->count() > 0)
                     <div class="grid gap-3 md:grid-cols-2">
@@ -65,7 +65,7 @@
                     <div>
                         <h3>Unable to load Vultr details</h3>
                         <p class="text-sm text-neutral-700 dark:text-neutral-300">
-                            Coolify could not fetch Vultr data with the selected token. The token may have been
+                            OpenRail could not fetch Vultr data with the selected token. The token may have been
                             deleted, revoked, or no longer has access.
                         </p>
                     </div>
@@ -177,7 +177,7 @@
                         <div class="flex w-full flex-col gap-4 p-3">
                             <div>
                                 <x-forms.datalist label="Additional SSH Keys (from Vultr)" id="selectedVultrSshKeyIds"
-                                    helper="Select existing SSH keys from your Vultr account to add to this server. The Coolify SSH key will be automatically added."
+                                    helper="Select existing SSH keys from your Vultr account to add to this server. The OpenRail SSH key will be automatically added."
                                     :multiple="true" :disabled="count($vultrSshKeys) === 0" :placeholder="count($vultrSshKeys) > 0 ? 'Search and select SSH keys...' : 'No SSH keys found in Vultr account'">
                                     @foreach ($vultrSshKeys as $sshKey)
                                         <option value="{{ $sshKey['id'] }}">
@@ -215,7 +215,7 @@
                                     @endif
                                 </div>
                                 <x-forms.textarea id="cloud_init_script" label=""
-                                    helper="Add a cloud-init script to run when the server is created. Coolify sends it to Vultr as user data."
+                                    helper="Add a cloud-init script to run when the server is created. OpenRail sends it to Vultr as user data."
                                     rows="8" />
 
                                 <div class="flex items-center gap-2">

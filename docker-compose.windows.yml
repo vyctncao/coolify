@@ -108,7 +108,7 @@ services:
     volumes:
       - ./ssh:/var/www/html/storage/app/ssh
     environment:
-      APP_NAME: "${APP_NAME:-Coolify}"
+      APP_NAME: "${APP_NAME:-OpenRail}"
       SOKETI_DEBUG: "${SOKETI_DEBUG:-false}"
       SOKETI_DEFAULT_APP_ID: "${PUSHER_APP_ID}"
       SOKETI_DEFAULT_APP_KEY: "${PUSHER_APP_KEY}"

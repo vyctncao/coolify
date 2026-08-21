@@ -3,7 +3,7 @@
 # Railpack end-to-end deploy smoke test against the local dev stack.
 #
 # Walks a curated set of railpack-* example apps from
-# DevelopmentRailpackExamplesSeeder, triggers a deploy via the Coolify API,
+# DevelopmentRailpackExamplesSeeder, triggers a deploy via the OpenRail API,
 # waits for the deployment queue to finish, then exec()s into the resulting
 # container and checks that COOLIFY_*, SOURCE_COMMIT, and any RAILPACK_*
 # build inputs landed correctly. Optionally curls the FQDN.

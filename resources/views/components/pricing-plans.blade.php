@@ -47,7 +47,7 @@
 
         <div class="flow-root mt-12">
             <div class="pb-10 text-xl text-center">For the detailed list of features, please visit our landing page: <a
-                    class="font-bold underline dark:text-white" href="https://coolify.io">coolify.io</a></div>
+                    class="font-bold underline dark:text-white" href="https://openrail.io">openrail.io</a></div>
             <div
                 class="grid max-w-sm grid-cols-1 -mt-16 divide-y divide-neutral-200 dark:divide-coolgray-500 isolate gap-y-16 sm:mx-auto lg:-mx-8 lg:mt-0 lg:max-w-none lg:grid-cols-3 lg:divide-x lg:divide-y-0 xl:-mx-4">
 
@@ -262,7 +262,7 @@
                     your self-hosted instance?
                     <x-forms.button>
                         <a class="font-bold dark:text-white hover:no-underline"
-                            href="{{ config('constants.urls.contact') }}">Contact
+                            href="{{ config('branding.urls.contact') }}">Contact
                             Us</a>
                     </x-forms.button>
                 </div>
@@ -306,7 +306,7 @@
                     <div class="text-2xl font-semibold dark:text-white">Server Automations</div>
                 </div>
                 <div class="mt-1 text-base leading-7 text-gray-300">
-                    Once you connected your server, Coolify will start managing it and do a
+                    Once you connected your server, OpenRail will start managing it and do a
                     lot of administrative tasks for you. You can also write your own scripts to
                     automate your server<span class="dark:text-warning">*</span>.
                 </div>
@@ -329,7 +329,7 @@
                 </div>
                 <div class="mt-1 text-base leading-7 text-gray-300">
                     You own your own data. All configurations saved on your own servers, so if
-                    you decide to stop using Coolify, you can still continue to manage your
+                    you decide to stop using OpenRail, you can still continue to manage your
                     deployed resources.
                 </div>
             </div>
@@ -351,7 +351,7 @@
                     <div class="text-2xl font-semibold dark:text-white">Monitoring</div>
                 </div>
                 <div class="mt-1 text-base leading-7 text-gray-300">
-                    Coolify will automatically monitor your configured servers and deployed
+                    OpenRail will automatically monitor your configured servers and deployed
                     resources. Notifies you if something goes wrong on your favourite
                     channels, like Discord, Telegram, via Email and more...
                 </div>

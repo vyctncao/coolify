@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        {{ data_get_str($server, 'name')->limit(10) }} > Cloud Token | Coolify
+        {{ data_get_str($server, 'name')->limit(10) }} > Cloud Token | OpenRail
     </x-slot>
     <livewire:server.navbar :server="$server" />
     <div class="flex flex-col h-full gap-4 md:gap-8 md:flex-row">

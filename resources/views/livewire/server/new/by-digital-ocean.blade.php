@@ -5,9 +5,9 @@
         @if ($current_step === 1)
             <div class="flex flex-col w-full gap-4">
                 <div class="text-sm text-neutral-500 dark:text-neutral-400">
-                    Don't have a DigitalOcean account? <a href="https://coolify.io/digitalocean" target="_blank"
+                    Don't have a DigitalOcean account? <a href="https://openrail.io/digitalocean" target="_blank"
                         class="underline dark:text-white">Sign up here</a>.
-                    <span class="text-xs">Coolify's referral link - it supports both of us.</span>
+                    <span class="text-xs">OpenRail's referral link - it supports both of us.</span>
                 </div>
                 @if ($available_tokens->count() > 0)
                     <div class="grid gap-3 md:grid-cols-2">
@@ -65,7 +65,7 @@
                     <div>
                         <h3>Unable to load DigitalOcean details</h3>
                         <p class="text-sm text-neutral-700 dark:text-neutral-300">
-                            Coolify could not fetch DigitalOcean data with the selected token. The token may have been
+                            OpenRail could not fetch DigitalOcean data with the selected token. The token may have been
                             deleted, revoked, or no longer has access.
                         </p>
                     </div>
@@ -178,7 +178,7 @@
                         <div class="flex w-full flex-col gap-4 p-3">
                             <div>
                                 <x-forms.datalist label="Extra SSH Keys" id="selectedDigitalOceanSshKeyIds"
-                                    helper="Select existing SSH keys from your DigitalOcean account to add to this Droplet. The Coolify SSH key will be automatically added."
+                                    helper="Select existing SSH keys from your DigitalOcean account to add to this Droplet. The OpenRail SSH key will be automatically added."
                                     :multiple="true" :disabled="count($digitalOceanSshKeys) === 0" :placeholder="count($digitalOceanSshKeys) > 0
                                         ? 'Search and select SSH keys...'
                                         : 'No SSH keys found in DigitalOcean account'">

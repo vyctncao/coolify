@@ -274,7 +274,7 @@
                                             <form class="flex flex-col w-full gap-2 rounded-sm"
                                                 wire:submit='submitHostFileStorage'>
                                                 <div class="flex flex-col">
-                                                    <div>Bind an existing host file into the container. Coolify will not create, edit, load, chmod, or delete the source file.</div>
+                                                    <div>Bind an existing host file into the container. OpenRail will not create, edit, load, chmod, or delete the source file.</div>
                                                 </div>
                                                 <div class="flex flex-col gap-2">
                                                     <x-forms.input canGate="update" :canResource="$resource"

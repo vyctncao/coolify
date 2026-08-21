@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Settings | Coolify
+        Settings | OpenRail
     </x-slot>
     <x-settings.navbar />
     <div class="flex flex-col">
@@ -12,7 +12,7 @@
                 </x-forms.button>
             @endif
         </div>
-        <div class="pb-4">Backup configuration for Coolify instance.</div>
+        <div class="pb-4">Backup configuration for OpenRail instance.</div>
         <div>
             @if ($server->isFunctional())
                 @if (isset($database) && isset($backup))
@@ -32,8 +32,8 @@
                         <livewire:project.database.backup-executions :backup="$backup" />
                     </div>
                 @else
-                    To configure automatic backup for your Coolify instance, you first need to add a database resource
-                    into Coolify.
+                    To configure automatic backup for your OpenRail instance, you first need to add a database resource
+                    into OpenRail.
                     <x-forms.button class="mt-2" wire:click="addCoolifyDatabase">Configure Backup</x-forms.button>
                 @endif
             @else

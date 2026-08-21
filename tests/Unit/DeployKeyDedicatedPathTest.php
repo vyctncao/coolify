@@ -49,7 +49,7 @@ function expectPrivateKeyMaterializationCommandsSkipLogging(array|Collection|str
 }
 
 /**
- * Git operations authenticate with the SSH key assigned in the UI. Coolify writes that key to a
+ * Git operations authenticate with the SSH key assigned in the UI. OpenRail writes that key to a
  * per-deployment path (/root/.ssh/id_rsa_coolify_<deployment_uuid>) instead of the shared
  * /root/.ssh/id_rsa, so it can neither overwrite the server root's own key nor race with other
  * concurrent operations on the same host. `-o IdentitiesOnly=yes` makes ssh offer only that key.

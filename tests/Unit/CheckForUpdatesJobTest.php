@@ -134,8 +134,8 @@ it('uses data_set for safe version mutation', function () {
     $job->handle();
 })->skip('Needs better mock setup for instanceSettings');
 
-it('preserves other component versions when preventing Coolify downgrade', function () {
-    // CDN has older Coolify but newer Traefik
+it('preserves other component versions when preventing OpenRail downgrade', function () {
+    // CDN has older OpenRail but newer Traefik
     Http::fake([
         '*' => Http::response([
             'coolify' => ['v4' => ['version' => '4.0.0']],
@@ -155,7 +155,7 @@ it('preserves other component versions when preventing Coolify downgrade', funct
         ->once()
         ->with(base_path('versions.json'), Mockery::on(function ($json) {
             $data = json_decode($json, true);
-            // Coolify should use running version
+            // OpenRail should use running version
             expect($data['coolify']['v4']['version'])->toBe('4.0.10');
             // Traefik should use CDN version (newer)
             expect($data['traefik']['v3.6'])->toBe('3.6.2');
@@ -171,7 +171,7 @@ it('preserves other component versions when preventing Coolify downgrade', funct
 
     \Illuminate\Support\Facades\Log::shouldReceive('warning')
         ->once()
-        ->with('CDN served older Coolify version than cache', Mockery::type('array'));
+        ->with('CDN served older OpenRail version than cache', Mockery::type('array'));
 
     \Illuminate\Support\Facades\Log::shouldReceive('warning')
         ->once()

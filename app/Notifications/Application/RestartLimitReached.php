@@ -52,7 +52,7 @@ class RestartLimitReached extends CustomEmailNotification
     public function toMail(): MailMessage
     {
         $mail = new MailMessage;
-        $mail->subject("Coolify: {$this->resource_name} stopped - restart limit reached ({$this->restart_count}/{$this->max_restart_count})");
+        $mail->subject("OpenRail: {$this->resource_name} stopped - restart limit reached ({$this->restart_count}/{$this->max_restart_count})");
         $mail->view('emails.application-restart-limit-reached', [
             'name' => $this->resource_name,
             'fqdn' => $this->fqdn,
@@ -68,7 +68,7 @@ class RestartLimitReached extends CustomEmailNotification
     {
         return new DiscordMessage(
             title: ':warning: Restart limit reached',
-            description: "{$this->resource_name} has been stopped after {$this->restart_count} restarts (limit: {$this->max_restart_count}).\n\n[Open Application in Coolify]({$this->resource_url})",
+            description: "{$this->resource_name} has been stopped after {$this->restart_count} restarts (limit: {$this->max_restart_count}).\n\n[Open Application in OpenRail]({$this->resource_url})",
             color: DiscordMessage::errorColor(),
             isCritical: true,
         );
@@ -76,13 +76,13 @@ class RestartLimitReached extends CustomEmailNotification
 
     public function toTelegram(): array
     {
-        $message = "Coolify: {$this->resource_name} has been stopped after {$this->restart_count} restarts (limit: {$this->max_restart_count}).";
+        $message = "OpenRail: {$this->resource_name} has been stopped after {$this->restart_count} restarts (limit: {$this->max_restart_count}).";
 
         return [
             'message' => $message,
             'buttons' => [
                 [
-                    'text' => 'Open Application in Coolify',
+                    'text' => 'Open Application in OpenRail',
                     'url' => $this->resource_url,
                 ],
             ],
@@ -99,7 +99,7 @@ class RestartLimitReached extends CustomEmailNotification
             message: $message,
             buttons: [
                 [
-                    'text' => 'Open Application in Coolify',
+                    'text' => 'Open Application in OpenRail',
                     'url' => $this->resource_url,
                 ],
             ],

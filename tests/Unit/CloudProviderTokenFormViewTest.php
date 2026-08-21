@@ -21,11 +21,11 @@ it('keeps provider affiliate links on server provider views', function () {
     $digitalOceanView = file_get_contents(__DIR__.'/../../resources/views/livewire/server/new/by-digital-ocean.blade.php');
 
     expect($tokenFormView)
-        ->not->toContain('https://coolify.io/hetzner')
-        ->not->toContain('https://coolify.io/vultr')
-        ->and($hetznerView)->toContain('https://coolify.io/hetzner')
-        ->and($vultrView)->toContain('https://coolify.io/vultr')
-        ->and($digitalOceanView)->toContain('https://coolify.io/digitalocean');
+        ->not->toContain('https://openrail.io/hetzner')
+        ->not->toContain('https://openrail.io/vultr')
+        ->and($hetznerView)->toContain('https://openrail.io/hetzner')
+        ->and($vultrView)->toContain('https://openrail.io/vultr')
+        ->and($digitalOceanView)->toContain('https://openrail.io/digitalocean');
 });
 
 it('uses a provider dropdown and modal forms on cloud provider tokens page', function () {

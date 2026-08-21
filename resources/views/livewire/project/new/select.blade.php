@@ -182,7 +182,7 @@
                                                 :src='service.logo'
                                                 x-on:error.window="$event.target.src = service.logo_github_url"
                                                 onerror="this.onerror=null; this.src=this.getAttribute('data-fallback');"
-                                                x-on:error="$event.target.src = '/coolify-logo.svg'"
+                                                x-on:error="$event.target.src = '/openrail-logo.svg'"
                                                 :data-fallback='service.logo_github_url' />
                                         </template>
                                     </x-slot:logo>
@@ -291,7 +291,7 @@
                         },
                         coolifyDocsUrl(service) {
                             const baseName = service.docsSlug || this.extractBaseServiceName(service.name);
-                            return 'https://coolify.io/docs/services/' + baseName;
+                            return 'https://openrail.io/docs/services/' + baseName;
                         },
                         officialDocsUrl(service) {
                             return service.documentation || null;
@@ -323,7 +323,7 @@
 
                             this.docCheckInProgress[serviceName] = true;
 
-                            // 1. Try Coolify docs first
+                            // 1. Try OpenRail docs first
                             const coolifyUrl = this.coolifyDocsUrl(service);
                             const coolifyExists = await this.checkUrlExists(coolifyUrl);
 

@@ -29,7 +29,7 @@ it('creates the root team before seeding the localhost server and predefined sha
     Server::created(function (Server $server) {
         SslCertificate::create([
             'server_id' => $server->id,
-            'common_name' => 'Coolify CA Certificate',
+            'common_name' => 'OpenRail CA Certificate',
             'ssl_certificate' => 'certificate',
             'ssl_private_key' => 'private-key',
             'valid_until' => now()->addYear(),

@@ -1,6 +1,6 @@
 <?php
 
-it('merges Coolify key with selected Hetzner keys', function () {
+it('merges OpenRail key with selected Hetzner keys', function () {
     $coolifyKeyId = 123;
     $selectedHetznerKeys = [456, 789];
 
@@ -16,7 +16,7 @@ it('merges Coolify key with selected Hetzner keys', function () {
 
 it('removes duplicate SSH key IDs', function () {
     $coolifyKeyId = 123;
-    $selectedHetznerKeys = [123, 456, 789]; // User also selected Coolify key
+    $selectedHetznerKeys = [123, 456, 789]; // User also selected OpenRail key
 
     // Simulate the merge and deduplication logic
     $sshKeys = array_merge(

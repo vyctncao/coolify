@@ -33,7 +33,7 @@ beforeEach(function () {
             'smtp_host' => 'localhost',
             'smtp_port' => 1025,
             'smtp_from_address' => 'hi@example.com',
-            'smtp_from_name' => 'Coolify',
+            'smtp_from_name' => 'OpenRail',
         ]);
     });
 

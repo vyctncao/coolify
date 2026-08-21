@@ -197,7 +197,7 @@ test('convertContainerEnvsToArray', function () {
                   "DB_DATABASE=coolify",
                   "DUSK_DRIVER_URL=http://selenium:4444",
                   "DB_USERNAME=coolify",
-                  "APP_NAME=Coolify Development",
+                  "APP_NAME=OpenRail Development",
                   "APP_PORT=8000",
                   "DB_PORT=5432",
                   "APP_URL=http://localhost",

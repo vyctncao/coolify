@@ -15,7 +15,7 @@ class GetInfrastructureOverview extends Tool
 {
     protected string $name = 'get_infrastructure_overview';
 
-    protected string $description = 'High-level overview of the authenticated team: Coolify version, all servers, projects with resource counts, and aggregate counts. Start here to understand the setup.';
+    protected string $description = 'High-level overview of the authenticated team: OpenRail version, all servers, projects with resource counts, and aggregate counts. Start here to understand the setup.';
 
     use BuildsResponse;
     use ResolvesTeam;

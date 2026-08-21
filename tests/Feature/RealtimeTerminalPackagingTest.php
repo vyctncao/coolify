@@ -31,7 +31,7 @@ it('keeps realtime terminal server logging behind the explicit debug flag', func
         ->toContain('const debugOverride = String(process.env.TERMINAL_DEBUG')
         ->toContain("['1', 'true', 'yes', 'on'].includes(debugOverride)")
         ->toContain('if (!terminalDebugEnabled) {')
-        ->not->toContain("console.log('Coolify realtime terminal server listening on port 6002. Let the hacking begin!');");
+        ->not->toContain("console.log('OpenRail realtime terminal server listening on port 6002. Let the hacking begin!');");
 });
 
 it('configures a server-initiated WebSocket heartbeat to survive proxy idle timeouts', function () {

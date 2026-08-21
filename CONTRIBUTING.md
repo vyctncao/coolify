@@ -1,5 +1,5 @@
-# Contributing to Coolify
-We’re happy that you’re interested in contributing to Coolify!
+# Contributing to OpenRail
+We’re happy that you’re interested in contributing to OpenRail!
 
 There are many ways to help:
 - Answer questions in GitHub Discussions or Discord
@@ -8,7 +8,7 @@ There are many ways to help:
 - Add new one-click services
 - Improve documentation
 
-Coolify is a PaaS used by 400,000+ people worldwide and maintained by two active maintainers. Contributions are welcome — but **alignment matters more than quantity**.
+OpenRail is a PaaS used by 400,000+ people worldwide and maintained by two active maintainers. Contributions are welcome — but **alignment matters more than quantity**.
 
 This guide explains **what kind of contributions are likely to be accepted** and how to submit them properly. Following it saves time for both you and the maintainers.
 
@@ -18,7 +18,7 @@ This guide explains **what kind of contributions are likely to be accepted** and
 
 
 ## High-Level Expectations
-- Coolify has a clear product direction.
+- OpenRail has a clear product direction.
 - Ownership and decisions are centralized.
 - Review capacity is limited.
 - Not every contribution will be accepted — even if technically correct.
@@ -27,12 +27,12 @@ This is normal for a two-maintainer project.
 
 
 ## State of the Project
-Coolify is currently at v4. While v4 is stable, it has some limitations, including:
+OpenRail is currently at v4. While v4 is stable, it has some limitations, including:
 - Limited scaling support
 - A more complex user experience
 - Other smaller issues that need refinement
 
-These limitations will be addressed in Coolify v5, which is in the planning stage. Because of this, major features, architectural changes, or significant UI changes will not be accepted for v4 at this stage.
+These limitations will be addressed in OpenRail v5, which is in the planning stage. Because of this, major features, architectural changes, or significant UI changes will not be accepted for v4 at this stage.
 
 We welcome contributions that help stabilize v4 for a bug free experience.
 
@@ -80,7 +80,7 @@ This ensures alignment before significant work is done.
 
 ## What This Project Is Not
 To set clear expectations:
-- Coolify is not optimized for first-time open-source contributors
+- OpenRail is not optimized for first-time open-source contributors
 - We do not provide beginner-focused mentorship issues
 - Large unsolicited changes are unlikely to be accepted
 - Broad refactors or style rewrites are not helpful
@@ -217,15 +217,15 @@ A: Yes, but keep in mind a PR closure is feedback, not a rejection of your effor
 
 # Development Guides
 ## Local Development
-To build and run Coolify locally, see: [Development](./DEVELOPMENT.md)
+To build and run OpenRail locally, see: [Development](./DEVELOPMENT.md)
 
 ### macOS Development with Lima
-Mac users can use [Lima](https://lima-vm.io/) to run a lightweight Linux virtual machine for local Coolify development. This is useful if you prefer a Linux-based Docker environment on macOS.
+Mac users can use [Lima](https://lima-vm.io/) to run a lightweight Linux virtual machine for local OpenRail development. This is useful if you prefer a Linux-based Docker environment on macOS.
 
 After creating and starting a Lima VM, run the normal local development commands from inside the VM as described in [Development](./DEVELOPMENT.md).
 
 ## Adding a New Service
-To add a new one-click service, follow: https://coolify.io/docs/get-started/contribute/service
+To add a new one-click service, follow: https://openrail.io/docs/get-started/contribute/service
 
 ## Contributing to Documentation
-To contribute to documentation, see: https://coolify.io/docs/get-started/contribute/documentation
+To contribute to documentation, see: https://openrail.io/docs/get-started/contribute/documentation

@@ -41,7 +41,7 @@ it('prefers embedded service template git timestamps from the templates bundle',
         ->with(base_path('templates/'.config('constants.services.file_name')))
         ->andReturn(json_encode([
             'activepieces' => [
-                'documentation' => 'https://coolify.io/docs',
+                'documentation' => 'https://openrail.io/docs',
                 'slogan' => 'Open source no-code business automation.',
                 'compose' => '',
                 'tags' => null,

@@ -40,13 +40,13 @@ write_status() {
 
 echo ""
 echo "=========================================="
-echo "   Coolify Upgrade - ${DATE}"
+echo "   OpenRail Upgrade - ${DATE}"
 echo "=========================================="
 echo ""
 
 # Initialize log file with header
 echo "============================================================" >>"$LOGFILE"
-echo "Coolify Upgrade Log" >>"$LOGFILE"
+echo "OpenRail Upgrade Log" >>"$LOGFILE"
 echo "Started: $(date '+%Y-%m-%d %H:%M:%S')" >>"$LOGFILE"
 echo "Target Version: ${LATEST_IMAGE}" >>"$LOGFILE"
 echo "Helper Version: ${LATEST_HELPER_VERSION}" >>"$LOGFILE"
@@ -155,7 +155,7 @@ log "Environment variables check complete"
 echo "     Done."
 
 # Make sure coolify network exists
-# It is created when starting Coolify with docker compose
+# It is created when starting OpenRail with docker compose
 log "Checking Docker network 'coolify'..."
 if ! docker network inspect coolify >/dev/null 2>&1; then
     log "Network 'coolify' does not exist, creating..."
@@ -220,7 +220,7 @@ log_section "Step 4/6: Stopping and restarting containers"
 write_status "4" "Stopping containers"
 echo ""
 echo "4/6 Stopping containers and starting new ones..."
-echo "     This step will restart all Coolify containers."
+echo "     This step will restart all OpenRail containers."
 echo "     Check the log file for details: ${LOGFILE}"
 
 # From this point forward, we need to ensure the script continues even if
@@ -285,7 +285,7 @@ nohup bash -c "
     log 'Step 6/6: Upgrade complete'
     echo '============================================================' >>\"\$LOGFILE\"
     write_status '6' 'Upgrade complete'
-    log 'Coolify upgrade completed successfully'
+    log 'OpenRail upgrade completed successfully'
     log \"Version: \${LATEST_IMAGE}\"
     echo '' >>\"\$LOGFILE\"
     echo '============================================================' >>\"\$LOGFILE\"
@@ -306,9 +306,9 @@ echo "5/6 Containers are being restarted in the background..."
 echo "6/6 Upgrade process initiated!"
 echo ""
 echo "=========================================="
-echo "   Coolify upgrade to ${LATEST_IMAGE} in progress"
+echo "   OpenRail upgrade to ${LATEST_IMAGE} in progress"
 echo "=========================================="
 echo ""
 echo "   The upgrade will continue in the background."
-echo "   Coolify will be available again shortly."
+echo "   OpenRail will be available again shortly."
 echo "   Log file: ${LOGFILE}"

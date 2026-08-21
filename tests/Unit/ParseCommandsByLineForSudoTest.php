@@ -176,7 +176,7 @@ test('skips sudo for fi statements', function () {
     expect($result[0])->toBe('fi');
 });
 
-test('adds ownership changes for Coolify data paths', function () {
+test('adds ownership changes for OpenRail data paths', function () {
     $commands = collect([
         'mkdir -p /data/coolify/logs',
     ]);
@@ -188,7 +188,7 @@ test('adds ownership changes for Coolify data paths', function () {
     expect($result[0])->toBe('sudo mkdir -p /data/coolify/logs && sudo sudo chown -R ubuntu:ubuntu /data/coolify/logs && sudo sudo chmod -R o-rwx /data/coolify/logs');
 });
 
-test('adds ownership changes for Coolify tmp paths', function () {
+test('adds ownership changes for OpenRail tmp paths', function () {
     $commands = collect([
         'mkdir -p /tmp/coolify/cache',
     ]);

@@ -86,11 +86,11 @@ test('it exports subscribed and unsubscribed verified users to separate files wi
     ]);
 });
 
-test('it only runs on Coolify Cloud', function () {
+test('it only runs on OpenRail Cloud', function () {
     config()->set('constants.coolify.self_hosted', true);
 
     $this->artisan('cloud:export-users')
-        ->expectsOutput('This command can only be run on Coolify Cloud.')
+        ->expectsOutput('This command can only be run on OpenRail Cloud.')
         ->assertFailed();
 
     Storage::disk('backups')->assertMissing([

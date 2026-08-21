@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        {{ data_get_str($storage, 'name')->limit(10) }} >Storages | Coolify
+        {{ data_get_str($storage, 'name')->limit(10) }} >Storages | OpenRail
     </x-slot>
 
     <div class="flex items-center gap-2">
@@ -18,7 +18,7 @@
         @can('delete', $storage)
             <x-modal-confirmation title="Confirm Storage Deletion?" isErrorButton buttonTitle="Delete"
                 submitAction="delete({{ $storage->id }})" :actions="array_filter([
-                    'The selected storage location will be permanently deleted from Coolify.',
+                    'The selected storage location will be permanently deleted from OpenRail.',
                     $backupCount > 0
                         ? $backupCount . ' backup schedule(s) will stop saving to S3. Existing objects in this storage will not be deleted.'
                         : null,

@@ -31,10 +31,10 @@ fi
 
 echo ""
 echo "=========================================="
-echo "   Coolify Installation - ${DATE}"
+echo "   OpenRail Installation - ${DATE}"
 echo "=========================================="
 echo ""
-echo "Welcome to Coolify Installer!"
+echo "Welcome to OpenRail Installer!"
 echo "This script will install everything for you. Sit back and relax."
 echo "Source code: https://github.com/coollabsio/coolify/blob/v4.x/scripts/install.sh"
 
@@ -348,7 +348,7 @@ fi
 echo "---------------------------------------------"
 echo "| Operating System  | $OS_TYPE $OS_VERSION"
 echo "| Docker            | $DOCKER_VERSION"
-echo "| Coolify           | $LATEST_VERSION"
+echo "| OpenRail           | $LATEST_VERSION"
 echo "| Helper            | $LATEST_HELPER_VERSION"
 echo "| Realtime          | $LATEST_REALTIME_VERSION"
 echo "| Docker Pool       | $DOCKER_ADDRESS_POOL_BASE (size $DOCKER_ADDRESS_POOL_SIZE)"
@@ -468,7 +468,7 @@ if [ "$SSH_DETECTED" = "false" ]; then
     *)
         echo "###############################################################################"
         echo "WARNING: Could not detect and install OpenSSH server - this does not mean that it is not installed or not running, just that we could not detect it."
-        echo -e "Please make sure it is installed and running, otherwise Coolify cannot connect to the host system. \n"
+        echo -e "Please make sure it is installed and running, otherwise OpenRail cannot connect to the host system. \n"
         echo "###############################################################################"
         exit 1
         ;;
@@ -483,7 +483,7 @@ if [ "$SSH_PERMIT_ROOT_LOGIN" = "yes" ] || [ "$SSH_PERMIT_ROOT_LOGIN" = "without
     echo " - SSH PermitRootLogin is enabled."
 else
     echo " - SSH PermitRootLogin is disabled."
-    echo "   If you have problems with SSH, please read this: https://coolify.io/docs/knowledge-base/server/openssh"
+    echo "   If you have problems with SSH, please read this: https://openrail.io/docs/knowledge-base/server/openssh"
 fi
 
 # Detect if docker is installed via snap
@@ -491,7 +491,7 @@ if [ -x "$(command -v snap)" ]; then
     SNAP_DOCKER_INSTALLED=$(snap list docker >/dev/null 2>&1 && echo "true" || echo "false")
     if [ "$SNAP_DOCKER_INSTALLED" = "true" ]; then
         echo "Docker is installed via snap."
-        echo "   Please note that Coolify does not support Docker installed via snap."
+        echo "   Please note that OpenRail does not support Docker installed via snap."
         echo "   Please remove Docker with snap (snap remove docker) and reexecute this script."
         exit 1
     fi
@@ -631,7 +631,7 @@ INSTALLED_DOCKER_VERSION=$(docker version --format '{{.Server.Version}}' 2>/dev/
 if [ -z "$INSTALLED_DOCKER_VERSION" ]; then
     echo " - WARNING: Could not determine Docker version. Please ensure Docker $MIN_DOCKER_VERSION+ is installed."
 elif [ "$INSTALLED_DOCKER_VERSION" -lt "$MIN_DOCKER_VERSION" ]; then
-    echo " - ERROR: Docker version $INSTALLED_DOCKER_VERSION is too old. Coolify requires Docker $MIN_DOCKER_VERSION or newer."
+    echo " - ERROR: Docker version $INSTALLED_DOCKER_VERSION is too old. OpenRail requires Docker $MIN_DOCKER_VERSION or newer."
     echo "   Please upgrade Docker: https://docs.docker.com/engine/install/"
     exit 1
 else
@@ -913,8 +913,8 @@ chmod -R 700 /data/coolify
 log "SSH key check completed"
 echo "     Done."
 
-log_section "Step 9/9: Installing Coolify"
-echo "9/9 Installing Coolify ($LATEST_VERSION)..."
+log_section "Step 9/9: Installing OpenRail"
+echo "9/9 Installing OpenRail ($LATEST_VERSION)..."
 echo -e " - It could take a while based on your server's performance, network speed, stars, etc."
 echo -e " - Please wait."
 getAJoke
@@ -924,8 +924,8 @@ if [[ $- == *x* ]]; then
 else
     bash /data/coolify/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-docker.io}" "true"
 fi
-echo " - Coolify installed successfully."
-echo " - Waiting for Coolify to be ready..."
+echo " - OpenRail installed successfully."
+echo " - Waiting for OpenRail to be ready..."
 
 # Wait for upgrade.sh background process to complete
 # upgrade.sh writes status to /data/coolify/source/.upgrade-status
@@ -985,14 +985,14 @@ if [ $WAITED -ge $MAX_WAIT ]; then
 fi
 
 # Final health verification - wait for container to be healthy
-echo " - Verifying Coolify is healthy..."
+echo " - Verifying OpenRail is healthy..."
 HEALTH_WAIT=60
 HEALTH_WAITED=0
 while [ $HEALTH_WAITED -lt $HEALTH_WAIT ]; do
     HEALTH=$(docker inspect --format='{{.State.Health.Status}}' coolify 2>/dev/null || echo "unknown")
     if [ "$HEALTH" = "healthy" ]; then
-        log "Coolify container is healthy"
-        echo " - Coolify is ready!"
+        log "OpenRail container is healthy"
+        echo " - OpenRail is ready!"
         break
     fi
     sleep 2
@@ -1000,7 +1000,7 @@ while [ $HEALTH_WAITED -lt $HEALTH_WAIT ]; do
 done
 
 if [ "$HEALTH" != "healthy" ]; then
-    echo " - ERROR: Coolify container is not healthy after ${HEALTH_WAIT}s. Status: $HEALTH"
+    echo " - ERROR: OpenRail container is not healthy after ${HEALTH_WAIT}s. Status: $HEALTH"
     echo " - Please check: docker logs coolify"
     exit 1
 fi
@@ -1028,10 +1028,10 @@ rm -f "$IPV4_TMP" "$IPV6_TMP"
 
 echo -e "\nYour instance is ready to use!\n"
 if [ -n "$IPV4_PUBLIC_IP" ]; then
-    echo -e "You can access Coolify through your Public IPV4: http://$IPV4_PUBLIC_IP:8000"
+    echo -e "You can access OpenRail through your Public IPV4: http://$IPV4_PUBLIC_IP:8000"
 fi
 if [ -n "$IPV6_PUBLIC_IP" ]; then
-    echo -e "You can access Coolify through your Public IPv6: http://[$IPV6_PUBLIC_IP]:8000"
+    echo -e "You can access OpenRail through your Public IPv6: http://[$IPV6_PUBLIC_IP]:8000"
 fi
 
 set +e
@@ -1051,6 +1051,6 @@ fi
 echo -e "\nWARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager).\n"
 
 log_section "Installation Complete"
-log "Coolify installation completed successfully"
+log "OpenRail installation completed successfully"
 log "Version: ${LATEST_VERSION}"
 log "Log file: ${INSTALLATION_LOG_WITH_DATE}"

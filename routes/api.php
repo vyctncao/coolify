@@ -96,7 +96,7 @@ Route::group([
     Route::get('/servers/{uuid}/domains', [ServersController::class, 'domains_by_server'])->middleware(['api.ability:read']);
     Route::get('/servers/{uuid}/resources', [ServersController::class, 'resources_by_server'])->middleware(['api.ability:read']);
 
-    // Destinations — REST surface for the Coolify "Destinations" UI section (added).
+    // Destinations — REST surface for the OpenRail "Destinations" UI section (added).
     Route::get('/destinations', [DestinationsController::class, 'index'])->middleware(['api.ability:read']);
     Route::get('/destinations/{uuid}', [DestinationsController::class, 'show'])->middleware(['api.ability:read']);
     Route::delete('/destinations/{uuid}', [DestinationsController::class, 'delete'])->middleware(['api.ability:write']);
@@ -309,5 +309,5 @@ Route::group([
 });
 
 Route::any('/{any}', function () {
-    return response()->json(['message' => 'Not found.', 'docs' => 'https://coolify.io/docs'], 404);
+    return response()->json(['message' => 'Not found.', 'docs' => 'https://openrail.io/docs'], 404);
 })->where('any', '.*');

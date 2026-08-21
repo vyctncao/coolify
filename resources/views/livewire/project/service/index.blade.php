@@ -24,7 +24,7 @@
             @if ($resourceType === 'application')
                 <x-slot:title>
                     {{ data_get_str($service, 'name')->limit(10) }} >
-                    {{ data_get_str($serviceApplication, 'name')->limit(10) }} | Coolify
+                    {{ data_get_str($serviceApplication, 'name')->limit(10) }} | OpenRail
                 </x-slot>
                 @if ($currentRoute === 'project.service.index.advanced')
                     <h2>Advanced</h2>
@@ -77,7 +77,7 @@
                                 <x-callout type="info" title="Required Port: {{ $requiredPort }}" class="mb-2">
                                     This service requires port <strong>{{ $requiredPort }}</strong> to function correctly. All domains must include this port number (or any other port if you know what you're doing).
                                     <br><br>
-                                    <strong>Example:</strong> https://app.coolify.io:{{ $requiredPort }},https://www.app.coolify.io:{{ $requiredPort }}
+                                    <strong>Example:</strong> https://app.openrail.io:{{ $requiredPort }},https://www.app.openrail.io:{{ $requiredPort }}
                                 </x-callout>
                             @endif
 
@@ -90,13 +90,13 @@
                             <div class="flex gap-2">
                                 @if (!$serviceApplication->serviceType()?->contains(str($serviceApplication->image)->before(':')))
                                     @if ($serviceApplication->required_fqdn)
-                                        <x-forms.input canGate="update" :canResource="$serviceApplication" required placeholder="https://app.coolify.io"
+                                        <x-forms.input canGate="update" :canResource="$serviceApplication" required placeholder="https://app.openrail.io"
                                             label="Domains" id="fqdn"
-                                            helper="You can specify one domain with path or more with comma. You can specify a port to bind the domain to.<br><br><span class='text-helper'>Example</span><br>- https://app.coolify.io,https://cloud.coolify.io/dashboard<br>- https://app.coolify.io/api/v3<br>- https://app.coolify.io:3000 -> app.coolify.io will point to port 3000 inside the container.<br>- https://app.coolify.io:8080/api -> app.coolify.io/api will point to port 8080 inside the container."></x-forms.input>
+                                            helper="You can specify one domain with path or more with comma. You can specify a port to bind the domain to.<br><br><span class='text-helper'>Example</span><br>- https://app.openrail.io,https://cloud.openrail.io/dashboard<br>- https://app.openrail.io/api/v3<br>- https://app.openrail.io:3000 -> app.openrail.io will point to port 3000 inside the container.<br>- https://app.openrail.io:8080/api -> app.openrail.io/api will point to port 8080 inside the container."></x-forms.input>
                                     @else
-                                        <x-forms.input canGate="update" :canResource="$serviceApplication" placeholder="https://app.coolify.io"
+                                        <x-forms.input canGate="update" :canResource="$serviceApplication" placeholder="https://app.openrail.io"
                                             label="Domains" id="fqdn"
-                                            helper="You can specify one domain with path or more with comma. You can specify a port to bind the domain to.<br><br><span class='text-helper'>Example</span><br>- https://app.coolify.io,https://cloud.coolify.io/dashboard<br>- https://app.coolify.io/api/v3<br>- https://app.coolify.io:3000 -> app.coolify.io will point to port 3000 inside the container.<br>- https://app.coolify.io:8080/api -> app.coolify.io/api will point to port 8080 inside the container."></x-forms.input>
+                                            helper="You can specify one domain with path or more with comma. You can specify a port to bind the domain to.<br><br><span class='text-helper'>Example</span><br>- https://app.openrail.io,https://cloud.openrail.io/dashboard<br>- https://app.openrail.io/api/v3<br>- https://app.openrail.io:3000 -> app.openrail.io will point to port 3000 inside the container.<br>- https://app.openrail.io:8080/api -> app.openrail.io/api will point to port 8080 inside the container."></x-forms.input>
                                     @endif
                                 @endif
                                 <x-forms.input canGate="update" :canResource="$serviceApplication"
@@ -180,7 +180,7 @@
             @elseif ($resourceType === 'database')
                 <x-slot:title>
                     {{ data_get_str($service, 'name')->limit(10) }} >
-                    {{ data_get_str($serviceDatabase, 'name')->limit(10) }} | Coolify
+                    {{ data_get_str($serviceDatabase, 'name')->limit(10) }} | OpenRail
                 </x-slot>
                 @if ($currentRoute === 'project.service.database.import')
                     <livewire:project.database.import :resource="$serviceDatabase" :key="'import-' . $serviceDatabase->uuid" />

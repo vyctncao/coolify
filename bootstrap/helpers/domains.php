@@ -172,10 +172,10 @@ function checkDomainUsage(ServiceApplication|Application|null $resource = null, 
             if ($domains->contains($naked_domain)) {
                 $conflicts[] = [
                     'domain' => $naked_domain,
-                    'resource_name' => 'Coolify Instance',
+                    'resource_name' => 'OpenRail Instance',
                     'resource_link' => '#',
                     'resource_type' => 'instance',
-                    'message' => "Domain $naked_domain is already in use by this Coolify instance",
+                    'message' => "Domain $naked_domain is already in use by this OpenRail instance",
                 ];
             }
         }
@@ -297,10 +297,10 @@ function checkIfDomainIsAlreadyUsedViaAPI(Collection|array $domains, ?string $te
         if ($domains->contains($naked_domain)) {
             $conflicts[] = [
                 'domain' => $naked_domain,
-                'resource_name' => 'Coolify Instance',
+                'resource_name' => 'OpenRail Instance',
                 'resource_uuid' => null,
                 'resource_type' => 'instance',
-                'message' => "Domain $naked_domain is already in use by this Coolify instance",
+                'message' => "Domain $naked_domain is already in use by this OpenRail instance",
             ];
         }
     }

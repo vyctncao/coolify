@@ -255,7 +255,7 @@ it('correctly excludes Docker Compose images from general prune', function () {
     }
 });
 
-it('excludes current version of Coolify infrastructure images from any registry', function () {
+it('excludes current version of OpenRail infrastructure images from any registry', function () {
     // Test the regex pattern used to protect the current version of infrastructure images
     // regardless of which registry they come from (ghcr.io, docker.io, or no prefix)
     $helperVersion = '1.0.12';
