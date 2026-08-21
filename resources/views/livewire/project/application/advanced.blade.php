@@ -61,7 +61,7 @@
                     helper="WARNING: Advanced use cases only. Your docker compose file will be deployed as-is. Nothing is modified by OpenRail. You need to configure the proxy parts. More info in the <a class='underline dark:text-white' href='https://openrail.io/docs/knowledge-base/docker/compose#raw-docker-compose-deployment'>documentation.</a>"
                     canGate="update" :canResource="$application" />
                 <x-forms.checkbox instantSave id="isConnectToDockerNetworkEnabled" label="Connect To Predefined Network"
-                    helper="By default, you do not reach the OpenRail defined networks.<br>Starting a docker compose based resource will have an internal network. <br>If you connect to a OpenRail defined network, you maybe need to use different internal DNS names to connect to a resource.<br><br>For more information, check <a class='underline dark:text-white' target='_blank' href='https://openrail.io/docs/knowledge-base/docker/compose#connect-to-predefined-networks'>this</a>."
+                    helper="By default, you do not reach the OpenRail defined networks.<br>Starting a docker compose based resource will have an internal network. <br>If you connect to an OpenRail defined network, you maybe need to use different internal DNS names to connect to a resource.<br><br>For more information, check <a class='underline dark:text-white' target='_blank' href='https://openrail.io/docs/knowledge-base/docker/compose#connect-to-predefined-networks'>this</a>."
                     canGate="update" :canResource="$application" />
             @endif
 

@@ -5808,7 +5808,7 @@ paths:
       operationId: create-digitalocean-server
       responses:
         '201':
-          description: 'DigitalOcean droplet created and linked to a OpenRail server.'
+          description: 'DigitalOcean droplet created and linked to an OpenRail server.'
         '401':
           $ref: '#/components/responses/401'
         '422':
@@ -10259,7 +10259,7 @@ paths:
       tags:
         - Vultr
       summary: 'Create Vultr Server'
-      description: 'Create a Vultr instance and link it as a OpenRail server.'
+      description: 'Create a Vultr instance and link it as an OpenRail server.'
       operationId: create-vultr-server
       responses:
         '201':

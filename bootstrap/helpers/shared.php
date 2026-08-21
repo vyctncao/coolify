@@ -317,7 +317,7 @@ function validateHostFileMountPath(string $input, string $context = 'host file p
 }
 
 /**
- * Resolve a tenant file mount path under a OpenRail-managed base directory.
+ * Resolve a tenant file mount path under an OpenRail-managed base directory.
  *
  * This performs lexical normalization only; the target file does not need to
  * exist yet. The normalized result must remain inside the given base directory.
