@@ -1212,9 +1212,9 @@ function generateCustomDockerRunOptionsForDatabases($docker_run_options, $docker
 }
 
 /**
- * Remove Coolify's custom Docker Compose fields from parsed YAML array
+ * Remove OpenRail's custom Docker Compose fields from parsed YAML array
  *
- * Coolify extends Docker Compose with custom fields that are processed during
+ * OpenRail extends Docker Compose with custom fields that are processed during
  * parsing and deployment but must be removed before sending to Docker.
  *
  * Custom fields:
@@ -1259,7 +1259,7 @@ function validateComposeFile(string $compose, int $server_id): string|Throwable
         }
         $yaml_compose = Yaml::parse($compose);
 
-        // Remove Coolify's custom fields before Docker validation
+        // Remove OpenRail's custom fields before Docker validation
         $yaml_compose = stripCoolifyCustomFields($yaml_compose);
 
         $base64_compose = base64_encode(Yaml::dump($yaml_compose));

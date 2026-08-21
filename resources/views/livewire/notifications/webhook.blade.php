@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Notifications | Coolify
+        Notifications | OpenRail
     </x-slot>
     <x-notification.navbar />
     <form wire:submit='submit' class="flex flex-col gap-4 pb-4">
@@ -30,11 +30,11 @@
 
             @can('update', $settings)
                 <x-forms.input type="password"
-                    helper="Enter a valid HTTP or HTTPS URL. Coolify will send POST requests to this endpoint when events occur."
+                    helper="Enter a valid HTTP or HTTPS URL. OpenRail will send POST requests to this endpoint when events occur."
                     required id="webhookUrl" label="Webhook URL (POST)" />
             @else
                 <x-forms.input disabled
-                    helper="Enter a valid HTTP or HTTPS URL. Coolify will send POST requests to this endpoint when events occur."
+                    helper="Enter a valid HTTP or HTTPS URL. OpenRail will send POST requests to this endpoint when events occur."
                     required label="Webhook URL (POST)" value="Hidden (only admins can view)" />
             @endcan
         </div>

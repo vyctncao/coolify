@@ -16,12 +16,12 @@ use Laravel\Mcp\Server;
 
 class CoolifyServer extends Server
 {
-    protected string $name = 'Coolify';
+    protected string $name = 'OpenRail';
 
     protected string $version = '0.1.0';
 
     protected string $instructions = <<<'MD'
-Read-only MCP server for Coolify, scoped to the authenticated team token.
+Read-only MCP server for OpenRail, scoped to the authenticated team token.
 
 Recommended workflow:
 1. get_infrastructure_overview — start here; single call returns all servers, projects with resource counts, and aggregates.

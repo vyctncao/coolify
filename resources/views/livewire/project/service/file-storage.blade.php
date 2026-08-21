@@ -6,7 +6,7 @@
             </div>
         @elseif ($fileStorage->is_host_file)
             <div class="w-full p-2 text-sm rounded bg-warning/10 text-warning">
-                This host file mount is bind-only. Coolify will not create, edit, load, chmod, or delete the source file.
+                This host file mount is bind-only. OpenRail will not create, edit, load, chmod, or delete the source file.
             </div>
         @elseif ($isReadOnly)
             <div class="w-full p-2 text-sm rounded bg-warning/10 text-warning">

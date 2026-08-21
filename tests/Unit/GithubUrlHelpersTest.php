@@ -35,7 +35,7 @@ it('generates correct install paths for github cloud ghe cloud and ghes', functi
     $githubApp = new GithubApp;
     $githubApp->forceFill(array_merge([
         'id' => 123,
-        'name' => 'Coolify Test App',
+        'name' => 'OpenRail Test App',
         'team_id' => 456,
     ], $attributes));
 

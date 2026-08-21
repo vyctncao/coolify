@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Cloud Token | Coolify
+        Cloud Token | OpenRail
     </x-slot>
     <x-security.navbar />
     <form class="flex flex-col" wire:submit="save">

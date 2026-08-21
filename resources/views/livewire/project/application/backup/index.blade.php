@@ -12,7 +12,7 @@
     },
 }">
     <x-slot:title>
-        {{ data_get_str($application, 'name')->limit(10) }} > Backups | Coolify
+        {{ data_get_str($application, 'name')->limit(10) }} > Backups | OpenRail
     </x-slot>
     <h1>Backups</h1>
     <livewire:project.shared.configuration-checker :resource="$application" />

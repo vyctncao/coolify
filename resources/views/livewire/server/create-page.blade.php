@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-4">
     <x-slot:title>
-        {{ $title }} | Coolify
+        {{ $title }} | OpenRail
     </x-slot>
 
     <div>

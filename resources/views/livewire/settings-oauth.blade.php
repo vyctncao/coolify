@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Settings | Coolify
+        Settings | OpenRail
     </x-slot>
     <x-settings.navbar />
     <form wire:submit='submit' class="flex flex-col">

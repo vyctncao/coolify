@@ -39,7 +39,7 @@ BASH);
     return [$exitCode, implode("\n", $output), is_file($outputFile) ? trim(file_get_contents($outputFile)) : null];
 }
 
-it('detects the current Coolify image tag from the running container image', function (string $scriptPath, string $image, string $expectedTag) {
+it('detects the current OpenRail image tag from the running container image', function (string $scriptPath, string $image, string $expectedTag) {
     [$exitCode, $output] = runPostgresUpgradeScriptCommand(sprintf(
         'MOCK_DOCKER_IMAGE=%s; export MOCK_DOCKER_IMAGE; source %s; current_coolify_image_tag',
         escapeshellarg($image),
@@ -57,7 +57,7 @@ it('detects the current Coolify image tag from the running container image', fun
     'scripts digest suffix' => ['scripts/upgrade-postgres.sh', 'ghcr.io/coollabsio/coolify:4.0.2@sha256:abcdef', '4.0.2'],
 ]);
 
-it('passes the preserved Coolify image tag to docker compose when starting the stack', function (string $scriptPath) {
+it('passes the preserved OpenRail image tag to docker compose when starting the stack', function (string $scriptPath) {
     [$exitCode, $output, $latestImage] = runPostgresUpgradeScriptCommand(
         sprintf('source %s; start_stack 4.0.0-beta.420', escapeshellarg($scriptPath)),
     );

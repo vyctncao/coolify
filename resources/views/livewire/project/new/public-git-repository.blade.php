@@ -14,7 +14,7 @@
             </div>
             <div>
                 For example application deployments, checkout <a class="underline dark:text-white"
-                    href="https://github.com/coollabsio/coolify-examples/" target="_blank">Coolify
+                    href="{{ config('branding.urls.examples') }}" target="_blank">OpenRail
                     Examples</a>.
             </div>
         </div>

@@ -24,7 +24,7 @@
     @if ($stoppedAfterRestartLimit)
         <x-status-badge status="Stopped after reaching restart limit ({{ $resource->restart_count }}/{{ $resource->max_restart_count }})."
             type="warning"
-            title="Container has crashed and Coolify stopped it after {{ $resource->restart_count }} restart attempts." />
+            title="Container has crashed and OpenRail stopped it after {{ $resource->restart_count }} restart attempts." />
     @endif
     @if (!str($resource->status)->contains('exited') && $showRefreshButton)
         <x-status-badge as="button" wire:target="manualCheckStatus" wire:loading.attr="disabled"

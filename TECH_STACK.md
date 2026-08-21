@@ -1,4 +1,4 @@
-# Coolify Technology Stack
+# OpenRail Technology Stack
 
 ## Frontend
 

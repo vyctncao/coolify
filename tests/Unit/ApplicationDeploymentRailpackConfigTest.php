@@ -310,7 +310,7 @@ it('builds railpack docker command with matching env and secret flags for all ra
     );
 
     // Build-time variables are interpolated by sourcing the build-time .env file before
-    // the build, so user/Coolify variables must NOT be forwarded inline as literals.
+    // the build, so user/OpenRail variables must NOT be forwarded inline as literals.
     expect($command)->toContain('set -a && source /artifacts/build-time.env && set +a');
     expect($command)->toContain("env 'RAILPACK_NODE_VERSION=22'");
     expect($command)->toContain("'RAILPACK_INSTALL_CMD=npm ci && npm run postinstall'");

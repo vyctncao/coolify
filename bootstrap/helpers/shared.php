@@ -235,7 +235,7 @@ function validateFilenameSafe(string $input, string $context = 'filename'): stri
  *
  * File mount paths are container paths supplied by tenants. They may look like
  * absolute paths (for example /etc/nginx/nginx.conf), but are later joined to a
- * Coolify-managed configuration directory on the host. Therefore shell safety is
+ * OpenRail-managed configuration directory on the host. Therefore shell safety is
  * not enough: every path segment must also be unable to traverse out of that
  * managed directory.
  *
@@ -276,8 +276,8 @@ function validateFileMountPath(string $input, string $context = 'file mount path
 /**
  * Validate a host file path used as a bind-only source.
  *
- * Unlike managed file mounts, this path is not re-based under the Coolify
- * configuration directory and must never be written by Coolify. It still needs
+ * Unlike managed file mounts, this path is not re-based under the OpenRail
+ * configuration directory and must never be written by OpenRail. It still needs
  * to be shell-safe because other storage code may pass paths through remote
  * shell commands.
  *
@@ -317,7 +317,7 @@ function validateHostFileMountPath(string $input, string $context = 'host file p
 }
 
 /**
- * Resolve a tenant file mount path under a Coolify-managed base directory.
+ * Resolve a tenant file mount path under a OpenRail-managed base directory.
  *
  * This performs lexical normalization only; the target file does not need to
  * exist yet. The normalized result must remain inside the given base directory.
@@ -2289,7 +2289,7 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                 $savedService->save();
 
                 if (! $hasValidNetworkMode) {
-                    // Add Coolify specific networks
+                    // Add OpenRail specific networks
                     $definedNetworkExists = $topLevelNetworks->contains(function ($value, $_) use ($definedNetwork) {
                         return $value == $definedNetwork;
                     });

@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Cloud-Init Script | Coolify
+        Cloud-Init Script | OpenRail
     </x-slot>
     <x-security.navbar />
     <form class="flex flex-col" wire:submit="save">

@@ -25,7 +25,7 @@ it('loads service templates from the Coollabs CDN', function () {
         ->toBe('https://cdn.coollabs.io/coolify/service-templates-latest.json');
 });
 
-it('only removes validated Coolify CDN temporary directories', function () {
+it('only removes validated OpenRail CDN temporary directories', function () {
     $command = new class extends SyncBunny
     {
         public function removeDirectory(string $path): void

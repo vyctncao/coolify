@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Auto Update | Coolify
+        Auto Update | OpenRail
     </x-slot>
     <x-settings.navbar />
     <div x-data="{ activeTab: window.location.hash ? window.location.hash.substring(1) : 'general' }" class="flex flex-col h-full gap-8 sm:flex-row">
@@ -19,7 +19,7 @@
                 <div class="flex items-end gap-2">
                     <x-forms.input required id="update_check_frequency" label="Update Check Frequency"
                         placeholder="0 * * * *"
-                        helper="Frequency (cron expression) to check for new Coolify versions and pull new Service Templates from CDN.<br>You can use every_minute, hourly, daily, weekly, monthly, yearly.<br><br>Default is every hour." />
+                        helper="Frequency (cron expression) to check for new OpenRail versions and pull new Service Templates from CDN.<br>You can use every_minute, hourly, daily, weekly, monthly, yearly.<br><br>Default is every hour." />
                     <x-forms.button wire:click='checkManually'>Check Manually</x-forms.button>
                 </div>
 
@@ -48,7 +48,7 @@
                 <h4 class="pt-4">Docker Registry</h4>
                 <div class="md:w-96">
                     <x-forms.select id="docker_registry_url" label="Docker Registry"
-                        helper="The Docker registry used to pull Coolify images during updates.<br>Switch to Docker Hub if you experience rate limiting with GitHub Container Registry.">
+                        helper="The Docker registry used to pull OpenRail images during updates.<br>Switch to Docker Hub if you experience rate limiting with GitHub Container Registry.">
                         <option value="docker.io">Docker Hub (docker.io)</option>
                         <option value="ghcr.io">GitHub Container Registry (ghcr.io)</option>
                     </x-forms.select>

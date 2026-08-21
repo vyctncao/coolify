@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        {{ data_get_str($server, 'name')->limit(10) }} > Swarm | Coolify
+        {{ data_get_str($server, 'name')->limit(10) }} > Swarm | OpenRail
     </x-slot>
     <livewire:server.navbar :server="$server" />
     <div class="flex flex-col h-full gap-4 md:gap-8 md:flex-row">
@@ -15,30 +15,30 @@
                     {{ config('deprecations.swarm') }}
                 </x-callout>
                 <div class="pb-4">Read the docs <a class='underline dark:text-white'
-                        href='https://coolify.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>.
+                        href='https://openrail.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>.
                 </div>
             </div>
 
             <div class="w-96">
                 @if ($server->settings->is_swarm_worker)
                     <x-forms.checkbox disabled instantSave type="checkbox" id="isSwarmManager"
-                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://coolify.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
+                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://openrail.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
                         label="Is it a Swarm Manager?" />
                 @else
                     <x-forms.checkbox canGate="update" :canResource="$server" instantSave
                         type="checkbox" id="isSwarmManager"
-                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://coolify.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
+                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://openrail.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
                         label="Is it a Swarm Manager?" />
                 @endif
 
                 @if ($server->settings->is_swarm_manager)
                     <x-forms.checkbox disabled instantSave type="checkbox" id="isSwarmWorker"
-                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://coolify.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
+                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://openrail.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
                         label="Is it a Swarm Worker?" />
                 @else
                     <x-forms.checkbox canGate="update" :canResource="$server" instantSave
                         type="checkbox" id="isSwarmWorker"
-                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://coolify.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
+                        helper="For more information, please read the documentation <a class='dark:text-white' href='https://openrail.io/docs/knowledge-base/docker/swarm' target='_blank'>here</a>."
                         label="Is it a Swarm Worker?" />
                 @endif
             </div>

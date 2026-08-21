@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Dashboard | Coolify
+        Dashboard | OpenRail
     </x-slot>
     @if (session('error'))
         <span x-data x-init="$wire.emit('error', '{{ session('error') }}')" />
@@ -119,7 +119,7 @@
                                     &
                                 @endif
                                 @if (!$server->settings->is_usable)
-                                    Not usable by Coolify
+                                    Not usable by OpenRail
                                 @endif
                             </div>
                         </div>

@@ -36,7 +36,7 @@
         <div class="w-full">
             <x-slot:title>
                 {{ data_get_str($service, 'name')->limit(10) }} >
-                {{ data_get_str($serviceDatabase, 'name')->limit(10) }} > Backups | Coolify
+                {{ data_get_str($serviceDatabase, 'name')->limit(10) }} > Backups | OpenRail
             </x-slot>
 
             @if ($backup)

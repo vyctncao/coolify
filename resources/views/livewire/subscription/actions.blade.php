@@ -302,7 +302,7 @@
         </section>
 
         <div class="text-sm text-neutral-500">
-            Need help? <a class="underline dark:text-white" href="{{ config('constants.urls.contact') }}"
+            Need help? <a class="underline dark:text-white" href="{{ config('branding.urls.contact') }}"
                 target="_blank">Contact us.</a>
         </div>
     @endif

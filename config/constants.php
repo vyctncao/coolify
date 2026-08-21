@@ -19,11 +19,6 @@ return [
         'releases_url' => env('RELEASES_URL', 'https://cdn.coollabs.io/coolify/releases.json'),
     ],
 
-    'urls' => [
-        'docs' => 'https://coolify.io/docs',
-        'contact' => 'https://coolify.io/docs/contact',
-    ],
-
     'services' => [
         'official' => 'https://cdn.coollabs.io/coolify/service-templates-latest.json',
         'file_name' => 'service-templates-latest.json',

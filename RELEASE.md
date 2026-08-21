@@ -1,6 +1,6 @@
-# Coolify Release Guide
+# OpenRail Release Guide
 
-This guide outlines the release process for Coolify, intended for developers and those interested in understanding how Coolify releases are managed and deployed.
+This guide outlines the release process for OpenRail, intended for developers and those interested in understanding how OpenRail releases are managed and deployed.
 
 ## Table of Contents
 - [Branch Strategy](#branch-strategy)
@@ -16,7 +16,7 @@ This guide outlines the release process for Coolify, intended for developers and
 
 ## Branch Strategy
 
-Coolify uses two long-lived branches so production fixes can ship without waiting on unfinished feature work.
+OpenRail uses two long-lived branches so production fixes can ship without waiting on unfinished feature work.
 
 | Branch | Role | Docker image tags | How it ships |
 | --- | --- | --- | --- |
@@ -166,7 +166,7 @@ When a new version is released and a new GitHub release is created, it doesn't i
   - Updates are managed by Andras, who ensures each cloud version is thoroughly tested and stable before releasing it.
 
 > [!IMPORTANT]
-> The cloud version of Coolify may be several versions behind the latest GitHub releases even if the CDN is updated. This is intentional to ensure stability and reliability for cloud users and Andras will manually update the cloud version when the update is ready.
+> The cloud version of OpenRail may be several versions behind the latest GitHub releases even if the CDN is updated. This is intentional to ensure stability and reliability for cloud users and Andras will manually update the cloud version when the update is ready.
 
 ## Manually Update/ Downgrade to Specific Versions
 
@@ -176,7 +176,7 @@ When a new version is released and a new GitHub release is created, it doesn't i
 > [!IMPORTANT]
 > Downgrading is supported but not recommended and can cause issues because of database migrations and other changes.
 
-To update your Coolify instance to a specific version, use the following command:
+To update your OpenRail instance to a specific version, use the following command:
 
 ```bash
 curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash -s <version>
