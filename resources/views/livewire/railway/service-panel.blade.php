@@ -19,13 +19,13 @@
 
             @if ($selectedUuid)
                 {{-- Header --}}
-                <div class="flex items-center gap-3.5 px-6 pt-6 pb-5">
+                <div class="flex items-center gap-3.5 px-6 pt-12 pb-8">
                     <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg shrink-0"
                         style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
                         <x-railway.resource-icon :type="$icon" size="w-5 h-5" />
                     </span>
                     <div class="min-w-0 flex-1">
-                        <div class="text-[26px] font-semibold text-rw-text truncate leading-tight tracking-[-0.02em]">{{ $name }}</div>
+                        <div class="text-[28px] font-semibold text-rw-text truncate leading-tight tracking-[-0.02em]">{{ $name }}</div>
                     </div>
 
                     {{-- Deploy + actions --}}
@@ -67,7 +67,7 @@
                 <div class="flex items-center gap-5 px-6 border-b" style="border-color: var(--color-rw-border);">
                     @foreach ($tabs as $key => $label)
                         <button type="button" wire:click="setTab('{{ $key }}')"
-                            class="relative pb-3 text-sm font-medium rw-focus {{ $tab === $key ? 'text-rw-text font-semibold' : 'text-rw-subtle hover:text-rw-text' }}">
+                            class="relative pb-4 text-sm font-medium rw-focus {{ $tab === $key ? 'text-rw-text font-semibold' : 'text-rw-subtle hover:text-rw-text' }}">
                             {{ $label }}
                             @if ($tab === $key)
                                 <span class="absolute left-0 -bottom-px w-full h-0.5 rounded-full" style="background: var(--color-rw-text);"></span>

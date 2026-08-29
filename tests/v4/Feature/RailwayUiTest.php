@@ -567,3 +567,17 @@ it('positions the service panel where Railway positions it', function () {
         // The old fixed-width drawer must be gone.
         ->assertDontSee('max-w-[680px]', escape: false);
 });
+
+it('spaces the service panel header to Railway\'s measured rhythm', function () {
+    // Measured off the 1:1 docs screenshot: Railway's title glyphs span
+    // +57..+83 from the panel top (a 28px face under ~48px of padding) and
+    // the tab underline lands at +158. Rendering this markup reproduces
+    // titleTop 52 (+5px Inter cap offset = 57) and tabRowBottom 158.
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->assertSee('pt-12 pb-8', escape: false)
+        ->assertSee('text-[28px]', escape: false);
+});
