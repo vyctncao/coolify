@@ -2,7 +2,10 @@
 @section('body')
     @parent
     @if (isSubscribed() || !isCloud())
-        <livewire:layout-popups />
+        {{-- Classic pages render inside the Railway chrome too, so the
+             Coolify-branded promos are suppressed here as well. The
+             realtime-connection warning still renders. --}}
+        <livewire:layout-popups :show-promos="false" />
     @endif
     <livewire:global-search />
     @auth

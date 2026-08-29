@@ -12,24 +12,28 @@
 /* Root surface for every Railway page. */
 @utility rw-root {
     @apply min-h-screen w-full bg-rw-bg text-rw-text;
-    font-family: 'Geist Sans', Inter, sans-serif;
-    font-feature-settings: 'cv11', 'ss01';
+    font-family: var(--font-sans);
+    /* Railway runs Inter with contextual alternates and the single-storey
+       `a` disabled, i.e. plain Inter. Only tabular figures are opted into,
+       so metrics and timestamps don't jitter as they tick. */
+    font-feature-settings: 'cv11';
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* The infinite dotted canvas background used in the architecture view. */
 @utility rw-canvas-grid {
     background-color: var(--color-rw-bg);
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
 }
 
 /* A resource node card on the canvas. */
 @utility rw-node {
-    @apply relative flex flex-col rounded-[10px] border bg-rw-panel px-4 py-3 select-none;
+    @apply relative flex flex-col rounded-[10px] border bg-rw-panel px-4 py-4 select-none;
     border-color: var(--color-rw-border);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-    transition: border-color 120ms ease, box-shadow 120ms ease, transform 60ms ease;
+    transition: border-color 150ms var(--ease-rw), box-shadow 150ms var(--ease-rw), transform 60ms var(--ease-rw);
 }
 
 @utility rw-node-hover {
@@ -51,10 +55,10 @@
 
 /* Buttons -------------------------------------------------------------- */
 @utility rw-btn {
-    @apply inline-flex items-center gap-1.5 rounded-md border px-2.5 h-8 text-[13px] font-medium text-rw-text cursor-pointer whitespace-nowrap;
+    @apply inline-flex items-center gap-1.5 rounded-md border px-3 h-[34px] text-sm font-medium text-rw-text cursor-pointer whitespace-nowrap;
     background: var(--color-rw-elevated);
     border-color: var(--color-rw-border);
-    transition: background 120ms ease, border-color 120ms ease;
+    transition: background 150ms var(--ease-rw), border-color 150ms var(--ease-rw);
 }
 
 @utility rw-btn-hover {
@@ -63,9 +67,9 @@
 }
 
 @utility rw-btn-primary {
-    @apply inline-flex items-center gap-1.5 rounded-md px-3 h-8 text-[13px] font-medium text-white cursor-pointer whitespace-nowrap border-0;
+    @apply inline-flex items-center gap-1.5 rounded-md px-3 h-[34px] text-sm font-medium text-white cursor-pointer whitespace-nowrap border-0;
     background: var(--color-rw-accent);
-    transition: background 120ms ease;
+    transition: background 150ms var(--ease-rw);
 }
 
 @utility rw-btn-primary-hover {
@@ -74,7 +78,7 @@
 
 @utility rw-icon-btn {
     @apply inline-flex items-center justify-center rounded-md w-8 h-8 text-rw-muted cursor-pointer;
-    transition: background 120ms ease, color 120ms ease;
+    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw);
 }
 
 @utility rw-icon-btn-hover {
@@ -97,8 +101,8 @@
 }
 
 @utility rw-dot-degraded {
-    background: var(--color-warning);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warning) 22%, transparent);
+    background: var(--color-rw-warn);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-rw-warn) 22%, transparent);
 }
 
 /* Panels / slide-over -------------------------------------------------- */
@@ -117,7 +121,7 @@
 /* Left icon rail item (inside a project). */
 @utility rw-rail-item {
     @apply flex items-center justify-center w-9 h-9 rounded-lg text-rw-muted cursor-pointer;
-    transition: background 120ms ease, color 120ms ease;
+    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw);
 }
 
 @utility rw-rail-item-hover {
@@ -132,8 +136,8 @@
 
 /* Dashboard sidebar nav item. */
 @utility rw-nav-item {
-    @apply flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-rw-muted cursor-pointer;
-    transition: background 120ms ease, color 120ms ease;
+    @apply flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-rw-muted cursor-pointer;
+    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw);
 }
 
 @utility rw-nav-item-hover {
@@ -148,15 +152,15 @@
 
 /* Dropdown menu surface (project / environment switchers). */
 @utility rw-menu {
-    @apply rounded-xl border p-1.5 shadow-2xl;
+    @apply rounded-lg border p-1.5;
     background: var(--color-rw-panel);
     border-color: var(--color-rw-border);
-    box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.8);
+    box-shadow: var(--shadow-rw-lg), var(--ring-rw-inset);
 }
 
 @utility rw-menu-item {
-    @apply flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[13px] text-rw-text cursor-pointer;
-    transition: background 120ms ease;
+    @apply flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-rw-text cursor-pointer;
+    transition: background 150ms var(--ease-rw);
 }
 
 @utility rw-menu-item-hover {
@@ -169,4 +173,237 @@
     stroke-width: 1.5;
     stroke-dasharray: 4 4;
     fill: none;
+}
+
+/* Cards ---------------------------------------------------------------- */
+
+/* Dashboard project / environment card. Railway keeps these very flat —
+   one hairline border, no shadow at rest, border brightens on hover. */
+@utility rw-card {
+    @apply rounded-lg border bg-rw-panel;
+    border-color: var(--color-rw-border);
+    transition: border-color 150ms var(--ease-rw), background 150ms var(--ease-rw);
+}
+
+@utility rw-card-hover {
+    border-color: var(--color-rw-border-strong);
+    background: var(--color-rw-elevated);
+}
+
+/* Tabs ----------------------------------------------------------------- */
+
+/* Underline tabs used in the topbar (Architecture / Observability / Logs /
+   Settings) and in the service panel (Deployments / Variables / ...).
+   The active marker is a 2px violet rule flush with the container edge. */
+@utility rw-tab {
+    @apply relative inline-flex items-center h-full px-1 text-[14px] font-medium text-rw-subtle cursor-pointer whitespace-nowrap;
+    transition: color 150ms var(--ease-rw);
+}
+
+@utility rw-tab-hover {
+    color: var(--color-rw-text);
+}
+
+@utility rw-tab-active {
+    @apply text-rw-text font-semibold;
+}
+
+@utility rw-tab-active-marker {
+    @apply absolute left-0 right-0 -bottom-px h-0.5 rounded-full;
+    background: var(--color-rw-accent-hover);
+}
+
+/* Badges --------------------------------------------------------------- */
+
+/* Deployment status chips: COMPLETED / REMOVED / FAILED / BUILDING. Small,
+   uppercase, wide-tracked — Railway treats them as labels, not buttons. */
+@utility rw-badge {
+    @apply inline-flex items-center rounded-sm px-1.5 py-1 text-[10px] font-semibold uppercase whitespace-nowrap;
+    letter-spacing: 0.06em;
+    background: var(--color-rw-gray-100);
+    color: var(--color-rw-gray-500);
+}
+
+@utility rw-badge-success {
+    background: var(--color-rw-green-200);
+    color: var(--color-rw-green-600);
+}
+
+@utility rw-badge-danger {
+    background: var(--color-rw-red-200);
+    color: var(--color-rw-red-600);
+}
+
+@utility rw-badge-warn {
+    background: var(--color-rw-yellow-200);
+    color: var(--color-rw-yellow-600);
+}
+
+@utility rw-badge-info {
+    background: var(--color-rw-violet-200);
+    color: var(--color-rw-violet-600);
+}
+
+/* The highlighted "current deployment" row — tinted surface plus a matching
+   border, rather than a plain card. */
+@utility rw-deploy-active {
+    @apply rounded-lg border;
+    background: color-mix(in srgb, var(--color-rw-green-100) 70%, var(--color-rw-panel));
+    border-color: var(--color-rw-green-300);
+}
+
+/* Small uppercase section label ("HISTORY", "DANGER", ...). */
+@utility rw-section-label {
+    @apply text-[11px] font-semibold uppercase text-rw-faint;
+    letter-spacing: 0.08em;
+}
+
+/* Forms ---------------------------------------------------------------- */
+@utility rw-input {
+    @apply w-full rounded-md border px-3 h-[34px] text-sm text-rw-text;
+    background: var(--color-rw-bg);
+    border-color: var(--color-rw-border);
+    transition: border-color 150ms var(--ease-rw), box-shadow 150ms var(--ease-rw);
+}
+
+@utility rw-input-focus {
+    border-color: var(--color-rw-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-rw-accent) 25%, transparent);
+    outline: none;
+}
+
+/* Embedded classic Coolify components ----------------------------------
+ |
+ | The service panel's Variables / Metrics / Advanced tabs mount real
+ | Coolify Livewire components. Those ship their own dark styling built for
+ | the classic chrome, which reads as a different product next to the
+ | Railway skin. This normalises the seam: neutralise their surfaces so they
+ | inherit ours, and pull their controls onto the Railway type and radius
+ | scale. Scoped tightly so it can't leak onto classic pages.
+ */
+@utility rw-embed {
+    color: var(--color-rw-text);
+    font-size: 13px;
+
+    & h1, & h2, & h3, & h4 {
+        color: var(--color-rw-text);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    & h1 { font-size: 18px; }
+    & h2 { font-size: 15px; }
+    & h3, & h4 { font-size: 13px; }
+
+    & p, & label, & span, & li, & dt, & dd {
+        color: inherit;
+    }
+
+    /* Coolify leans on .box / .dark:bg-coolgray-* surfaces; flatten them
+       onto the panel so nested cards don't stack three greys deep. */
+    & .box,
+    & [class*="bg-coolgray"],
+    & [class*="dark:bg-coolgray"] {
+        background: var(--color-rw-elevated) !important;
+        border-color: var(--color-rw-border) !important;
+        border-radius: var(--radius-rw-md) !important;
+        color: var(--color-rw-text) !important;
+    }
+
+    & input:not([type="checkbox"]):not([type="radio"]),
+    & select,
+    & textarea {
+        background: var(--color-rw-bg) !important;
+        border-color: var(--color-rw-border) !important;
+        border-radius: var(--radius-rw) !important;
+        color: var(--color-rw-text) !important;
+        font-size: 13px !important;
+    }
+
+    & input:focus,
+    & select:focus,
+    & textarea:focus {
+        border-color: var(--color-rw-accent) !important;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-rw-accent) 25%, transparent) !important;
+        outline: none !important;
+    }
+
+    & button:not([class*="rw-"]) {
+        border-radius: var(--radius-rw) !important;
+        font-size: 13px !important;
+    }
+
+    & a {
+        color: var(--color-rw-accent-hover);
+    }
+
+    & hr,
+    & [class*="border-coolgray"] {
+        border-color: var(--color-rw-border) !important;
+    }
+}
+
+/* Scrollbars ----------------------------------------------------------- */
+
+/* Railway uses a thin, low-contrast overlay scrollbar that only reads once
+   you're looking for it. */
+@utility rw-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-rw-gray-200) transparent;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-rw-gray-200);
+        border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--color-rw-gray-300);
+    }
+}
+
+/* Interaction states ---------------------------------------------------- */
+
+/* Railway pairs every control with a small press-in. Large controls barely
+   move (0.995); small icon buttons take the full 0.95. */
+@utility rw-press {
+    transition: background 150ms var(--ease-rw), border-color 150ms var(--ease-rw), transform 150ms var(--ease-rw-spring);
+
+    &:active {
+        transform: scale(0.995);
+    }
+}
+
+@utility rw-press-sm {
+    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw), transform 150ms var(--ease-rw-spring);
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Keyboard focus. Railway outlines standalone controls rather than ringing
+   them, offset so the shape stays legible against a dark surface. */
+@utility rw-focus {
+    &:focus-visible {
+        outline: 2px solid var(--color-rw-accent);
+        outline-offset: 2px;
+    }
+}
+
+/* Disabled controls drop to 40% and stop responding to hover. */
+@utility rw-disabled {
+    &:disabled,
+    &[aria-disabled="true"] {
+        opacity: 0.4;
+        pointer-events: none;
+    }
 }

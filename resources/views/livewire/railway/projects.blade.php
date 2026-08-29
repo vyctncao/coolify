@@ -1,73 +1,66 @@
 <div>
     <x-slot:title>Projects | Coolify</x-slot>
-    <div class="flex w-full">
-        <x-railway.sidebar active="projects" />
 
-        <main class="flex-1 min-w-0 h-screen overflow-y-auto scrollbar">
-            <div class="max-w-6xl mx-auto px-8 py-8">
-                {{-- Header --}}
-                <div class="flex items-start justify-between mb-8">
-                    <div>
-                        <h1 class="text-[28px] font-semibold text-rw-text">Projects</h1>
-                        <div class="text-[13px] text-rw-subtle mt-1">{{ $groups->count() }} {{ $groups->count() === 1 ? 'project' : 'projects' }}, sorted by environment.</div>
+    {{-- Railway's dashboard is a single centred column under a bare header —
+         no sidebar. Cards are whole projects; environments are chosen from the
+         switcher once you're inside one. --}}
+    <div class="flex flex-col h-screen w-full overflow-hidden">
+        <x-railway.dashboard-topbar />
+
+        <main class="flex-1 min-h-0 overflow-y-auto rw-scroll">
+            <div class="mx-auto px-6 pt-14 pb-16" style="max-width: var(--container-rw);">
+                {{-- Workspace header --}}
+                <div class="flex items-center justify-between gap-4 mb-8">
+                    <livewire:railway.team-switcher />
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a href="{{ route('team.index') }}" wire:navigate
+                            class="rw-btn hover:rw-btn-hover rw-press rw-focus !px-2.5" title="Workspace settings">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </a>
+
+                        {{-- Railway's primary dashboard action is outlined in
+                             the accent, not filled. --}}
+                        <a href="{{ route('project.index') }}" wire:navigate
+                            class="inline-flex items-center gap-1.5 rounded-md border px-3 h-[34px] text-sm font-medium rw-press rw-focus whitespace-nowrap"
+                            style="border-color: var(--color-rw-accent); color: var(--color-rw-accent-hover);">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            New Project
+                        </a>
                     </div>
-                    <a href="{{ route('project.index') }}" wire:navigate class="rw-btn-primary hover:rw-btn-primary-hover">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                        New
-                    </a>
                 </div>
 
-                @forelse ($groups as $project)
-                    <section class="mb-9">
-                        {{-- Project header --}}
-                        <div class="flex items-center gap-2.5 mb-3">
-                            <span class="inline-block w-5 h-5 rounded-full shrink-0" style="background: linear-gradient(135deg,#8b5cf6,#e5484d);"></span>
-                            <h2 class="text-[16px] font-semibold text-rw-text truncate">{{ $project['name'] }}</h2>
-                            <span class="rw-pill">{{ $project['environment_count'] }} {{ $project['environment_count'] === 1 ? 'environment' : 'environments' }}</span>
-                            @if ($project['description'])
-                                <span class="text-[12px] text-rw-subtle truncate">· {{ $project['description'] }}</span>
-                            @endif
-                            <div class="flex-1"></div>
-                            <a href="{{ route('project.edit', ['project_uuid' => $project['uuid']]) }}" wire:navigate class="text-[12px] text-rw-subtle hover:text-rw-text">Settings</a>
-                        </div>
+                {{-- Project grid --}}
+                @if ($groups->isNotEmpty())
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        @foreach ($groups as $project)
+                            <a href="{{ $project['url'] ?? route('project.edit', ['project_uuid' => $project['uuid']]) }}" wire:navigate
+                                class="rw-card hover:rw-card-hover group/card flex flex-col p-6 min-h-[185px]">
+                                <h2 class="text-[17px] font-semibold text-rw-text leading-snug">{{ $project['name'] }}</h2>
 
-                        {{-- Environment cards --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            @forelse ($project['environments'] as $env)
-                                <a href="{{ $env['url'] }}" wire:navigate class="rw-node hover:rw-node-hover !p-0 overflow-hidden group">
-                                    <div class="flex items-center justify-between px-4 py-2.5">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <svg class="w-3.5 h-3.5 text-rw-subtle shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/></svg>
-                                            <span class="text-[13px] font-semibold text-rw-text truncate">{{ $env['name'] }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="relative h-28 mx-3 rounded-lg rw-canvas-grid border overflow-hidden" style="border-color: var(--color-rw-border);">
-                                        <div class="absolute inset-0 flex items-center justify-center gap-2">
-                                            @forelse ($env['glyphs'] as $glyph)
-                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg border shadow-sm" style="background: var(--color-rw-elevated); border-color: var(--color-rw-border-strong);">
-                                                    <x-railway.resource-icon :type="$glyph" size="w-4 h-4" />
-                                                </span>
-                                            @empty
-                                                <span class="text-[12px] text-rw-subtle">No services</span>
-                                            @endforelse
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2 px-4 py-3 text-[12px] text-rw-muted">
-                                        <span class="rw-dot {{ $env['online'] > 0 ? 'rw-dot-online' : 'rw-dot-offline' }}"></span>
-                                        <span class="truncate">{{ $env['online'] }}/{{ $env['total'] }} services online</span>
-                                    </div>
-                                </a>
-                            @empty
-                                <div class="rw-node items-center justify-center py-8 text-[12px] text-rw-subtle">No environments.</div>
-                            @endforelse
-                        </div>
-                    </section>
-                @empty
-                    <div class="rw-node items-center justify-center py-16 text-center">
-                        <div class="text-rw-muted text-[14px]">No projects yet.</div>
-                        <a href="{{ route('project.index') }}" wire:navigate class="mt-3 rw-btn-primary hover:rw-btn-primary-hover">Create your first project</a>
+                                @if ($project['description'])
+                                    <p class="mt-2 text-sm text-rw-subtle line-clamp-2">{{ $project['description'] }}</p>
+                                @endif
+
+                                <div class="flex-1"></div>
+
+                                <div class="flex items-center gap-2 text-sm text-rw-subtle">
+                                    <span>{{ $project['service_count'] }} {{ $project['service_count'] === 1 ? 'service' : 'services' }}</span>
+                                    @if ($project['environment_count'] > 1)
+                                        <span class="text-rw-faint">·</span>
+                                        <span>{{ $project['environment_count'] }} environments</span>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
-                @endforelse
+                @else
+                    <div class="rw-card flex flex-col items-center justify-center py-20 text-center">
+                        <div class="text-sm text-rw-muted">No projects yet.</div>
+                        <a href="{{ route('project.index') }}" wire:navigate
+                            class="mt-4 rw-btn-primary hover:rw-btn-primary-hover rw-press rw-focus">Create your first project</a>
+                    </div>
+                @endif
             </div>
         </main>
     </div>

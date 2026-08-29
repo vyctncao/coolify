@@ -19,7 +19,7 @@
     <x-railway.project-chrome :project="$project" :environment="$environment"
         :projects="$allProjects" :environments="$allEnvironments" active="settings">
 
-        <div class="h-full overflow-y-auto scrollbar">
+        <div class="h-full overflow-y-auto rw-scroll">
             <div class="max-w-5xl mx-auto px-8 py-8">
                 <h1 class="text-[24px] font-semibold text-rw-text mb-8">Project Settings</h1>
 

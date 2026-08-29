@@ -20,10 +20,14 @@
 @custom-variant dark (&:where(:root, :root *));
 
 @theme {
-    --font-sans: 'Geist Sans', Inter, sans-serif;
-    --font-mono: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    --font-geist-sans: 'Geist Sans', Inter, sans-serif;
-    --font-logs: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    /* Railway sets Inter as its UI face and JetBrains Mono for anything
+       code-shaped (env var names, logs, IDs). Both are self-hosted from
+       resources/fonts. Geist stays in the stacks as a fallback so classic
+       Coolify screens degrade to what they were designed against. */
+    --font-sans: 'Inter', 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SFMono-Regular', Consolas, Menlo, monospace;
+    --font-geist-sans: 'Inter', 'Geist Sans', sans-serif;
+    --font-logs: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SFMono-Regular', Consolas, Menlo, monospace;
 
     --color-base: #101010;
     --color-warning: #fcd452;
@@ -50,23 +54,117 @@
     --color-coolgray-400: #282828;
     --color-coolgray-500: #323232;
 
-    /* Railway UI palette (Railway 1:1 skin over Coolify backend) */
-    --color-rw-bg: #0b0b0f;
-    --color-rw-surface: #101014;
-    --color-rw-panel: #16161c;
-    --color-rw-elevated: #1c1c23;
-    --color-rw-hover: #202028;
-    --color-rw-border: #26262e;
-    --color-rw-border-strong: #34343f;
+    /* ------------------------------------------------------------------
+       Railway UI palette.
+
+       These are Railway's own production design tokens, read off the
+       computed `:root` of railway.com and converted from HSL to hex. The
+       defining characteristic is that Railway's "grays" are not neutral —
+       they carry a ~246-250deg violet hue, which is what gives the product
+       its signature cool-plum cast. Neutral grays read as the wrong
+       product immediately, so keep the hue when adjusting these.
+
+       Scale convention is dark-mode-first: 50 is the darkest step and 950
+       the lightest, i.e. the inverse of Tailwind's default direction.
+       ------------------------------------------------------------------ */
+
+    /* Violet-tinted gray ramp — hsl(246-248, 4-21%, 13-97%) */
+    --color-rw-gray-50: #1c1a28;
+    --color-rw-gray-100: #211f2d;
+    --color-rw-gray-200: #33323e;
+    --color-rw-gray-300: #545260;
+    --color-rw-gray-400: #6c6b7b;
+    --color-rw-gray-500: #878593;
+    --color-rw-gray-600: #a1a0ab;
+    --color-rw-gray-700: #c4c4ca;
+    --color-rw-gray-800: #dcdce0;
+    --color-rw-gray-900: #f2f1f3;
+    --color-rw-gray-950: #f7f7f8;
+
+    /* Accent ramp — Railway ships this as its `pink-*` scale, but the hue
+       is 270deg, so it renders as violet. Named for what it looks like. */
+    --color-rw-violet-50: #1f132a;
+    --color-rw-violet-100: #291839;
+    --color-rw-violet-200: #3d2259;
+    --color-rw-violet-300: #52297a;
+    --color-rw-violet-400: #6e31aa;
+    --color-rw-violet-500: #853bce;
+    --color-rw-violet-600: #a667e4;
+    --color-rw-violet-700: #bf93ec;
+    --color-rw-violet-800: #d9bef4;
+    --color-rw-violet-900: #f2e9fb;
+
+    --color-rw-green-100: #15231d;
+    --color-rw-green-200: #1c362a;
+    --color-rw-green-300: #26543f;
+    --color-rw-green-400: #367859;
+    --color-rw-green-500: #42946e;
+    --color-rw-green-600: #72c09c;
+
+    --color-rw-red-100: #2c1111;
+    --color-rw-red-200: #4f1817;
+    --color-rw-red-300: #741d1b;
+    --color-rw-red-400: #912422;
+    --color-rw-red-500: #b62d2b;
+    --color-rw-red-600: #d85c5a;
+
+    --color-rw-yellow-100: #241e0f;
+    --color-rw-yellow-200: #3d3214;
+    --color-rw-yellow-300: #675218;
+    --color-rw-yellow-400: #ad871f;
+    --color-rw-yellow-500: #dfaf2a;
+    --color-rw-yellow-600: #eac153;
+
+    --color-rw-blue-100: #0f1b33;
+    --color-rw-blue-300: #1d4596;
+    --color-rw-blue-500: #306ee8;
+    --color-rw-blue-600: #5e8eed;
+
+    /* Semantic aliases — what the markup actually references. */
+    --color-rw-bg: #13111c;             /* hsl(250 24% 9%)  — app background */
+    --color-rw-surface: #181622;        /* hsl(250 21% 11%) — secondaryBg    */
+    --color-rw-panel: #1c1a28;          /* gray-50                           */
+    --color-rw-elevated: #211f2d;       /* gray-100                          */
+    --color-rw-hover: #2a2836;
+    --color-rw-border: #33323e;         /* gray-200                          */
+    --color-rw-border-strong: #545260;  /* gray-300                          */
     --color-rw-text: #ffffff;
-    --color-rw-muted: #9a9aa5;
-    --color-rw-subtle: #66666f;
-    --color-rw-accent: #8b5cf6;
-    --color-rw-accent-hover: #7c4dff;
-    --color-rw-accent-soft: #6d5bd0;
-    --color-rw-online: #4ba15f;
-    --color-rw-online-bright: #3fb950;
-    --color-rw-danger: #e5484d;
+    --color-rw-muted: #a1a0ab;          /* gray-600                          */
+    --color-rw-subtle: #878593;         /* gray-500                          */
+    --color-rw-faint: #6c6b7b;          /* gray-400                          */
+    --color-rw-accent: #853bce;         /* violet-500                        */
+    --color-rw-accent-hover: #a667e4;   /* violet-600                        */
+    --color-rw-accent-soft: #3d2259;    /* violet-200                        */
+    --color-rw-online: #42946e;         /* green-500                         */
+    --color-rw-online-bright: #72c09c;  /* green-600                         */
+    --color-rw-danger: #b62d2b;         /* red-500                           */
+    --color-rw-danger-bright: #d85c5a;  /* red-600                           */
+    --color-rw-warn: #dfaf2a;           /* yellow-500 — sleeping / building  */
+
+    /* Radii — Railway uses a tight, consistent set. */
+    --radius-rw-sm: 4px;
+    --radius-rw: 6px;
+    --radius-rw-md: 8px;
+    --radius-rw-lg: 10px;
+    --radius-rw-xl: 12px;
+
+    /* Elevation. In dark mode Railway largely replaces drop shadows with an
+       inset hairline, so the ladder below is paired with `--ring-rw-inset`. */
+    --shadow-rw-sm: 0 1px 2px rgb(0 0 0 / 0.28);
+    --shadow-rw-md: 0 8px 24px rgb(0 0 0 / 0.4);
+    --shadow-rw-lg: 0 15px 40px rgb(19 17 28 / 0.5);
+    --ring-rw-inset: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+
+    /* Motion. Railway's default is 150ms on the standard material curve;
+       presses use an expo-out "spring". */
+    --ease-rw: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-rw-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-rw: 150ms;
+
+    /* Layout constants lifted from Railway's Tailwind theme. */
+    --spacing-rw-header: 72px;
+    --spacing-rw-sidebar: 200px;
+    --container-rw: 1160px;
 }
 
 /*

@@ -1,22 +1,25 @@
 <div>
     <div x-data="{ open: @entangle('open').live }" x-cloak>
-        {{-- Backdrop --}}
-        <div x-show="open" x-transition.opacity class="fixed inset-0 z-40" style="background: rgba(0,0,0,0.4);" @click="open = false"></div>
+        {{-- Backdrop. Starts below the header so the project/environment
+             switchers and section tabs stay reachable, as they do on Railway. --}}
+        <div x-show="open" x-transition.opacity class="fixed left-0 right-0 bottom-0 z-40"
+            style="top: var(--spacing-rw-header); background: rgba(0,0,0,0.32);" @click="open = false"></div>
 
         {{-- Slide-over --}}
-        <aside class="fixed inset-y-0 right-0 z-50 w-full max-w-[680px] flex flex-col rw-panel transition-transform duration-200 ease-out"
+        <aside class="fixed bottom-0 right-0 z-50 w-full max-w-[680px] flex flex-col rw-panel rounded-tl-xl overflow-hidden transition-transform duration-200 ease-out"
+            style="top: var(--spacing-rw-header);"
             :class="open ? 'translate-x-0' : 'translate-x-full'"
             @wheel.stop @mousedown.stop @contextmenu.stop>
 
             @if ($selectedUuid)
                 {{-- Header --}}
-                <div class="flex items-center gap-3 px-6 pt-6 pb-4">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+                <div class="flex items-center gap-3.5 px-6 pt-6 pb-5">
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg shrink-0"
                         style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
-                        <x-railway.resource-icon :type="$icon" size="w-4 h-4" />
+                        <x-railway.resource-icon :type="$icon" size="w-5 h-5" />
                     </span>
                     <div class="min-w-0 flex-1">
-                        <div class="text-[18px] font-semibold text-rw-text truncate">{{ $name }}</div>
+                        <div class="text-[26px] font-semibold text-rw-text truncate leading-tight tracking-[-0.02em]">{{ $name }}</div>
                     </div>
 
                     {{-- Deploy + actions --}}
@@ -58,7 +61,7 @@
                 <div class="flex items-center gap-5 px-6 border-b" style="border-color: var(--color-rw-border);">
                     @foreach ($tabs as $key => $label)
                         <button type="button" wire:click="setTab('{{ $key }}')"
-                            class="relative pb-2.5 text-[13px] font-medium {{ $tab === $key ? 'text-rw-text' : 'text-rw-subtle hover:text-rw-muted' }}">
+                            class="relative pb-3 text-sm font-medium rw-focus {{ $tab === $key ? 'text-rw-text font-semibold' : 'text-rw-subtle hover:text-rw-text' }}">
                             {{ $label }}
                             @if ($tab === $key)
                                 <span class="absolute left-0 -bottom-px w-full h-0.5 rounded-full" style="background: var(--color-rw-text);"></span>
@@ -68,7 +71,7 @@
                 </div>
 
                 {{-- Content --}}
-                <div class="flex-1 min-h-0 overflow-y-auto scrollbar px-6 py-5">
+                <div class="flex-1 min-h-0 overflow-y-auto rw-scroll px-6 py-5">
                     @switch($tab)
                         @case('deployments')
                             @if (! empty($fqdns))
@@ -82,31 +85,68 @@
                                 </div>
                             @endif
 
-                            @forelse ($deployments as $d)
-                                @php
-                                    $isActive = $activeDeploymentId && $d['id'] === $activeDeploymentId;
-                                    [$badgeLabel, $badgeClass] = match (true) {
-                                        $isActive => ['ACTIVE', 'text-rw-online'],
-                                        $d['status'] === 'finished' => ['Success', 'text-rw-online'],
-                                        $d['status'] === 'failed' => ['Failed', 'text-rw-danger'],
-                                        $d['status'] === 'in_progress' => ['Building', 'text-warning'],
-                                        $d['status'] === 'queued' => ['Queued', 'text-rw-muted'],
-                                        default => ['Cancelled', 'text-rw-subtle'],
-                                    };
-                                @endphp
-                                <div class="rw-node hover:rw-node-hover !flex-row items-center gap-3 mb-2 {{ $isActive ? 'rw-node-selected' : '' }}">
-                                    <span class="text-[10px] font-bold uppercase tracking-wide {{ $badgeClass }} w-16 shrink-0">{{ $badgeLabel }}</span>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="text-[13px] text-rw-text truncate">{{ $d['message'] }}</div>
-                                        <div class="text-[11px] text-rw-subtle truncate">
-                                            {{ $d['ago'] }} {{ $d['via'] }}@if ($d['commit']) · {{ $d['commit'] }}@endif
+                            @php
+                                // Railway leads with the deployment that is
+                                // actually serving traffic, then files the rest
+                                // under HISTORY.
+                                $activeDeployment = $activeDeploymentId
+                                    ? collect($deployments)->firstWhere('id', $activeDeploymentId)
+                                    : null;
+                                $historyDeployments = collect($deployments)
+                                    ->reject(fn ($d) => $activeDeployment && $d['id'] === $activeDeployment['id'])
+                                    ->values();
+
+                                $chipFor = fn (array $d) => match ($d['status']) {
+                                    'finished' => ['COMPLETED', 'rw-badge-success'],
+                                    'failed' => ['FAILED', 'rw-badge-danger'],
+                                    'in_progress' => ['BUILDING', 'rw-badge-warn'],
+                                    'queued' => ['QUEUED', 'rw-badge-info'],
+                                    default => ['REMOVED', ''],
+                                };
+                            @endphp
+
+                            @if ($activeDeployment)
+                                @php [$chipLabel, $chipClass] = $chipFor($activeDeployment); @endphp
+                                <div class="rw-deploy-active mb-4">
+                                    <div class="flex items-center gap-3 px-4 py-3">
+                                        <span class="rw-badge {{ $chipClass }} shrink-0">{{ $chipLabel }}</span>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-[13px] text-rw-text truncate">{{ $activeDeployment['message'] }}</div>
+                                            <div class="text-[11px] text-rw-subtle truncate">
+                                                {{ $activeDeployment['ago'] }} {{ $activeDeployment['via'] }}@if ($activeDeployment['commit']) · {{ $activeDeployment['commit'] }}@endif
+                                            </div>
                                         </div>
+                                        <button type="button" wire:click="openDeploymentLogs({{ $activeDeployment['id'] }})"
+                                            class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
                                     </div>
-                                    <button type="button" wire:click="openDeploymentLogs({{ $d['id'] }})" class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
+                                    <div class="flex items-center gap-2 px-4 py-2.5 border-t" style="border-color: var(--color-rw-green-300);">
+                                        <svg class="w-4 h-4 shrink-0" style="color: var(--color-rw-online-bright);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+                                        <span class="text-[13px] text-rw-text">Deployment successful</span>
+                                    </div>
                                 </div>
-                            @empty
+                            @endif
+
+                            @if ($historyDeployments->isNotEmpty())
+                                <div class="rw-section-label mb-2">History</div>
+                                @foreach ($historyDeployments as $d)
+                                    @php [$chipLabel, $chipClass] = $chipFor($d); @endphp
+                                    <div class="rw-card hover:rw-card-hover flex items-center gap-3 px-4 py-3 mb-2">
+                                        <span class="rw-badge {{ $chipClass }} shrink-0">{{ $chipLabel }}</span>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-[13px] text-rw-text truncate">{{ $d['message'] }}</div>
+                                            <div class="text-[11px] text-rw-subtle truncate">
+                                                {{ $d['ago'] }} {{ $d['via'] }}@if ($d['commit']) · {{ $d['commit'] }}@endif
+                                            </div>
+                                        </div>
+                                        <button type="button" wire:click="openDeploymentLogs({{ $d['id'] }})"
+                                            class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                            @if (empty($deployments))
                                 <div class="text-[13px] text-rw-subtle py-8 text-center">No deployments recorded for this resource.</div>
-                            @endforelse
+                            @endif
 
                             @if (! empty($links['deployments']))
                                 <a href="{{ $links['deployments'] }}" wire:navigate class="inline-flex mt-2 text-[12px] text-rw-accent hover:underline">View all deployments →</a>
@@ -399,7 +439,7 @@
                     </div>
 
                     {{-- Content --}}
-                    <div class="flex-1 min-h-0 overflow-y-auto scrollbar px-6 py-4">
+                    <div class="flex-1 min-h-0 overflow-y-auto rw-scroll px-6 py-4">
                         @switch($deploymentLogTab)
                             @case('details')
                                 <div class="flex flex-col gap-3 max-w-xl">

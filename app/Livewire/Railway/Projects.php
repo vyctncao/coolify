@@ -33,12 +33,19 @@ class Projects extends Component
                     ];
                 })->values();
 
+            // Railway's dashboard card is a whole-project summary and links
+            // straight into an environment, so surface a total service count
+            // and a default target (production, falling back to the first).
+            $defaultEnvironment = $environments->firstWhere('name', 'production') ?? $environments->first();
+
             return [
                 'uuid' => $project->uuid,
                 'name' => $project->name,
                 'description' => $project->description,
                 'environment_count' => $environments->count(),
                 'environments' => $environments,
+                'service_count' => $environments->sum('total'),
+                'url' => $defaultEnvironment['url'] ?? null,
             ];
         })->values();
 

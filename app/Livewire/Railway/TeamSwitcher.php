@@ -33,6 +33,21 @@ class TeamSwitcher extends Component
         return view('livewire.railway.team-switcher', [
             'teams' => auth()->user()->teams()->get(),
             'current' => currentTeam(),
+            'planLabel' => $this->planLabel(),
         ]);
+    }
+
+    /**
+     * The line Railway renders under the workspace name ("Hobby Plan").
+     * Self-hosted installs have no billing, so say so rather than inventing
+     * a tier.
+     */
+    private function planLabel(): string
+    {
+        if (! isCloud()) {
+            return 'Self-hosted';
+        }
+
+        return isSubscribed() ? 'Pro Plan' : 'Free Plan';
     }
 }

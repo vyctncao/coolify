@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\LayoutPopups;
 use App\Livewire\Railway\Canvas;
 use App\Livewire\Railway\Projects;
 use App\Livewire\Railway\ServicePanel;
@@ -51,10 +52,34 @@ beforeEach(function () {
 });
 
 it('renders the Railway projects dashboard with the project card', function () {
+    // Railway's dashboard has no "Projects" heading: the workspace name is the
+    // title and each card carries the project name plus its service count.
     Livewire::test(Projects::class)
         ->assertOk()
-        ->assertSee('Projects')
-        ->assertSee('Mimic Internal');
+        ->assertSee('Mimic Internal')
+        ->assertSee('1 service');
+});
+
+it('points each dashboard project card at an environment canvas', function () {
+    // Railway's card is a whole-project entry that drops you straight into an
+    // environment, so the card needs a resolved canvas target and a total
+    // service count across every environment.
+    $groups = Livewire::test(Projects::class)->assertOk()->viewData('groups');
+
+    expect($groups)->toHaveCount(1);
+
+    $card = $groups->first();
+
+    // The count spans every environment, while the link defaults to
+    // production the way Railway's dashboard does.
+    $production = $this->project->environments()->where('name', 'production')->firstOrFail();
+
+    expect($card['name'])->toBe('Mimic Internal')
+        ->and($card['service_count'])->toBe(1)
+        ->and($card['url'])->toBe(route('railway.canvas', [
+            'project_uuid' => $this->project->uuid,
+            'environment_uuid' => $production->uuid,
+        ]));
 });
 
 it('renders the architecture canvas with the resource node', function () {
@@ -65,6 +90,22 @@ it('renders the architecture canvas with the resource node', function () {
         ->assertOk()
         ->assertSee('staging-app')
         ->assertSee('Online');
+});
+
+it('renders the section tabs in the header rather than a side rail', function () {
+    // Railway has no left icon rail: Architecture / Observability / Logs /
+    // Settings live in the project header, and the active one is underlined.
+    $rendered = Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])->assertOk();
+
+    foreach (['Architecture', 'Observability', 'Logs', 'Settings'] as $tab) {
+        $rendered->assertSee($tab);
+    }
+
+    $rendered->assertSee('rw-tab-active-marker', escape: false)
+        ->assertDontSee('rw-rail-item', escape: false);
 });
 
 it('opens the service panel for a selected resource', function () {
@@ -252,4 +293,17 @@ it('changes a member role and removes a member', function () {
         'team_id' => $this->team->id,
         'user_id' => $member->id,
     ]);
+});
+
+it('suppresses the Coolify promo popups on Railway pages', function () {
+    // The sponsorship and notification popups are Coolify-branded and break
+    // the skin, so the Railway layout opts out. The realtime-connection
+    // warning is deliberately unaffected — it reports a real fault.
+    Livewire::test(LayoutPopups::class, ['showPromos' => false])
+        ->assertOk()
+        ->assertDontSee('Love Coolify?');
+
+    Livewire::test(LayoutPopups::class)
+        ->assertOk()
+        ->assertSet('showPromos', true);
 });

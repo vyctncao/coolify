@@ -86,7 +86,7 @@
             @endif
         </span>
     @endauth
-    @if (instanceSettings()->is_sponsorship_popup_enabled && !isCloud())
+    @if ($showPromos && instanceSettings()->is_sponsorship_popup_enabled && !isCloud())
         <span x-show="popups.sponsorship">
             <x-popup>
                 <x-slot:customActions>
@@ -181,7 +181,7 @@
             </div>
         </x-banner>
     @endif
-    @if (!currentTeam()->isAnyNotificationEnabled())
+    @if ($showPromos && !currentTeam()->isAnyNotificationEnabled())
         <span x-show="popups.notification">
             <x-popup>
                 <x-slot:title>

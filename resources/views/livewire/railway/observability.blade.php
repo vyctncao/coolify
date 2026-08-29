@@ -4,7 +4,7 @@
     <x-railway.project-chrome :project="$project" :environment="$environment"
         :projects="$allProjects" :environments="$allEnvironments" active="observability">
 
-        <div class="h-full overflow-y-auto scrollbar">
+        <div class="h-full overflow-y-auto rw-scroll">
             <div class="max-w-6xl mx-auto px-8 py-6">
                 {{-- Toolbar --}}
                 <div class="flex items-center justify-between mb-5">

@@ -15,27 +15,27 @@
 
             {{-- Top-right actions --}}
             <div class="absolute top-4 right-4 z-20 flex items-center gap-2">
-                <button type="button" @click="$dispatch('openRailwayAgent')" class="rw-btn hover:rw-btn-hover">
+                <button type="button" @click="$dispatch('openRailwayAgent')" class="rw-btn hover:rw-btn-hover rw-press rw-focus">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>
                     Ask AI
                 </button>
-                <button type="button" wire:click="$refresh" class="rw-btn hover:rw-btn-hover">
+                <button type="button" wire:click="$refresh" class="rw-btn hover:rw-btn-hover rw-press rw-focus">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
                     Sync
                 </button>
                 <a href="{{ route('project.resource.create', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid]) }}" wire:navigate
-                    class="rw-btn-primary hover:rw-btn-primary-hover">
+                    class="rw-btn hover:rw-btn-hover rw-press rw-focus">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                    Add
+                    Create
                 </a>
             </div>
 
             {{-- Empty state --}}
             @if (count($nodes) === 0)
                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10 pointer-events-none">
-                    <div class="text-rw-muted text-[14px]">No services in this environment yet.</div>
+                    <div class="text-sm text-rw-muted">No services in this environment yet.</div>
                     <a href="{{ route('project.resource.create', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid]) }}" wire:navigate
-                        class="rw-btn-primary hover:rw-btn-primary-hover pointer-events-auto">Add a service</a>
+                        class="rw-btn-primary hover:rw-btn-primary-hover rw-press rw-focus pointer-events-auto">Create a service</a>
                 </div>
             @endif
 
@@ -48,27 +48,28 @@
 
                 {{-- Nodes (server-rendered content, Alpine-driven positions) --}}
                 @foreach ($nodes as $node)
-                    <div class="absolute rw-node hover:rw-node-hover"
-                        style="width: 240px;"
+                    {{-- Width must be a class, not an inline style: x-bind:style
+                         replaces the style attribute wholesale on every render. --}}
+                    <div class="absolute rw-node hover:rw-node-hover w-[280px] min-h-[124px]"
                         x-bind:style="posStyle('{{ $node['id'] }}')"
                         x-bind:class="selected === '{{ $node['id'] }}' ? 'rw-node-selected' : ''"
                         @mousedown.stop="startDrag($event, '{{ $node['id'] }}')"
                         @click="openNode('{{ $node['id'] }}', '{{ $node['kind'] }}')">
                         {{-- Header --}}
                         <div class="flex items-center gap-2.5">
-                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-md shrink-0"
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-md shrink-0"
                                 style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
                                 <x-railway.resource-icon :type="$node['icon']" size="w-4 h-4" />
                             </span>
                             <div class="min-w-0 flex-1">
-                                <div class="text-[13px] font-semibold text-rw-text truncate leading-tight">{{ $node['name'] }}</div>
+                                <div class="text-[15px] font-semibold text-rw-text truncate leading-tight">{{ $node['name'] }}</div>
                                 @if ($node['subtitle'])
-                                    <div class="text-[11px] text-rw-subtle truncate leading-tight">{{ $node['subtitle'] }}</div>
+                                    <div class="text-xs text-rw-subtle truncate leading-tight mt-0.5">{{ $node['subtitle'] }}</div>
                                 @endif
                             </div>
                         </div>
                         {{-- Footer --}}
-                        <div class="mt-3">
+                        <div class="mt-auto pt-4">
                             @if ($node['deployStatus'])
                                 <div class="inline-flex items-center gap-2"
                                     x-data="{ start: {{ (int) ($node['deployStartedMs'] ?? 0) }}, elapsed: '0:00' }"
@@ -85,8 +86,9 @@
                 @endforeach
             </div>
 
-            {{-- Bottom-left control cluster --}}
-            <div class="absolute bottom-4 left-4 z-20 flex flex-col gap-2">
+            {{-- View controls. Railway anchors these to the top-left of the
+                 canvas, directly under the header. --}}
+            <div class="absolute top-4 left-4 z-20 flex flex-col gap-2">
                 <button type="button" @click="fitView()" class="rw-icon-btn hover:rw-icon-btn-hover border" style="border-color: var(--color-rw-border); background: var(--color-rw-surface);" title="Grid">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="5" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="19" r="1"/><circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/></svg>
                 </button>
@@ -179,7 +181,7 @@
                         </button>
                         <input type="text" placeholder="Choose a database…" class="flex-1 bg-transparent text-[14px] text-rw-text placeholder:text-rw-subtle focus:outline-none border-0 p-0" />
                     </div>
-                    <div class="p-1.5 max-h-[420px] overflow-y-auto scrollbar" wire:loading.class="opacity-50">
+                    <div class="p-1.5 max-h-[420px] overflow-y-auto rw-scroll" wire:loading.class="opacity-50">
                         @foreach ($dbTypes as [$k, $label])
                             <button type="button" wire:click="createDatabase('{{ $k }}')" @click="activeCreate = null"
                                 class="rw-menu-item hover:rw-menu-item-hover !py-2.5 gap-3 w-full text-left">
