@@ -34,16 +34,18 @@
         'degraded' => 'rw-dot rw-dot-degraded',
         default => 'rw-dot rw-dot-offline',
     };
+    // Railway renders a node's status line in gray-600, the same weight as its
+    // "Just deployed" meta, and reserves colour for online / attention states.
     $labelClass = match ($variant) {
-        'online' => 'text-rw-online',
-        'degraded' => 'text-warning',
-        default => 'text-rw-subtle',
+        'online' => 'text-rw-online-bright',
+        'degraded' => 'text-rw-warn',
+        default => 'text-rw-muted',
     };
 @endphp
 
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-2']) }}>
     <span class="{{ $dotClass }}"></span>
     @if ($showLabel)
-        <span class="text-[13px] {{ $labelClass }}">{{ $label }}</span>
+        <span class="text-sm {{ $labelClass }}">{{ $label }}</span>
     @endif
 </span>

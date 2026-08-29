@@ -456,3 +456,22 @@ it('shows the empty state when no container produced a line', function () {
         ->assertSet('error', null)
         ->assertSee('No logs in this time range');
 });
+
+it('renders canvas nodes at Railway\'s measured card geometry', function () {
+    // These numbers were measured off Railway's own rendered service card
+    // (their template deploy page mounts the real component): 288x144, 12px
+    // radius, 24px padding, 16px/600 title. Locked in so a future tidy-up
+    // can't quietly drift the node off-spec.
+    Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSee('w-[288px]', escape: false)
+        ->assertSee('min-h-[144px]', escape: false)
+        // Not `text-base`: Coolify's --color-base token makes Tailwind emit
+        // .text-base as a *colour* utility, which silently shadows the
+        // font-size one. An explicit value sidesteps the collision.
+        ->assertSee('text-[16px]', escape: false)
+        ->assertDontSee('text-base', escape: false);
+});

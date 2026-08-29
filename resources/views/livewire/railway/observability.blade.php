@@ -21,7 +21,7 @@
 
                 {{-- Usage / summary cards --}}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                    <div class="rw-node !p-5">
+                    <div class="rw-card !p-5">
                         <div class="flex items-center justify-between mb-4">
                             <div class="text-[14px] font-semibold text-rw-text">Environment usage</div>
                             <svg class="w-4 h-4 text-rw-subtle" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="rw-node !p-5">
+                    <div class="rw-card !p-5">
                         <div class="flex items-center justify-between mb-4">
                             <div class="text-[14px] font-semibold text-rw-text">Error logs</div>
                             <svg class="w-4 h-4 text-rw-subtle" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
@@ -56,7 +56,7 @@
                 </div>
 
                 {{-- Services --}}
-                <div class="rw-node !p-5">
+                <div class="rw-card !p-5">
                     <div class="text-[14px] font-semibold text-rw-text mb-4">Services</div>
                     @forelse ($services as $service)
                         <a href="{{ $service['href'] }}" wire:navigate class="flex items-center gap-3 py-2.5 border-b hover:bg-rw-hover -mx-2 px-2 rounded" style="border-color: var(--color-rw-border);">

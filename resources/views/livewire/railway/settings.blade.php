@@ -65,7 +65,7 @@
                             @case('environments')
                                 <div class="text-[16px] font-semibold text-rw-text mb-1">Environments</div>
                                 <div class="text-[13px] text-rw-subtle mb-4">Each environment gives you an isolated instance of each service.</div>
-                                <div class="rw-node !p-0 divide-y" style="--tw-divide-opacity: 1;">
+                                <div class="rw-card !p-0 divide-y" style="--tw-divide-opacity: 1;">
                                     @foreach ($allEnvironments as $env)
                                         <div class="flex items-center gap-3 px-4 py-3 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
                                             @if ($env->uuid === $environment->uuid)
@@ -88,7 +88,7 @@
 
                                     {{-- Invite form --}}
                                     @if ($canManageMembers)
-                                        <div class="rw-node flex flex-col gap-3">
+                                        <div class="rw-card flex flex-col gap-3">
                                             <div class="text-[13px] font-semibold text-rw-text">Invite a member</div>
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 <input type="email" wire:model="inviteEmail" wire:keydown.enter="inviteMember(false)" placeholder="name@example.com"
@@ -126,7 +126,7 @@
                                     @if ($invitations->isNotEmpty())
                                         <div>
                                             <div class="text-[13px] font-semibold text-rw-text mb-2">Pending invitations</div>
-                                            <div class="rw-node !p-0">
+                                            <div class="rw-card !p-0">
                                                 @foreach ($invitations as $invitation)
                                                     <div class="flex items-center gap-3 px-4 py-3 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
                                                         <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-[10px] font-semibold text-white shrink-0" style="background: linear-gradient(135deg,#6b7280,#4b5563);">
@@ -148,7 +148,7 @@
                                     {{-- Current members --}}
                                     <div>
                                         <div class="text-[13px] font-semibold text-rw-text mb-2">{{ $members->count() }} {{ Illuminate\Support\Str::plural('member', $members->count()) }}</div>
-                                        <div class="rw-node !p-0">
+                                        <div class="rw-card !p-0">
                                             @foreach ($members as $member)
                                                 @php $memberRole = $member->pivot->role ?? 'member'; @endphp
                                                 <div class="flex items-center gap-3 px-4 py-3 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
@@ -189,7 +189,7 @@
                                 <div class="rounded-md border px-3 py-2.5 mb-4 text-[12px]" style="border-color: color-mix(in srgb, var(--color-rw-danger) 40%, transparent); background: color-mix(in srgb, var(--color-rw-danger) 10%, transparent); color: var(--color-rw-danger);">
                                     Managing services here affects all data and deployments across environments.
                                 </div>
-                                <div class="rw-node !p-0 mb-8">
+                                <div class="rw-card !p-0 mb-8">
                                     @forelse ($resources as $resource)
                                         <div class="flex items-center gap-3 px-4 py-3 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
                                             <x-railway.resource-icon :type="$resource['icon']" size="w-4 h-4" />

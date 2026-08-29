@@ -50,7 +50,7 @@
                 @foreach ($nodes as $node)
                     {{-- Width must be a class, not an inline style: x-bind:style
                          replaces the style attribute wholesale on every render. --}}
-                    <div class="absolute rw-node hover:rw-node-hover w-[280px] min-h-[124px]"
+                    <div class="absolute rw-node hover:rw-node-hover w-[288px] min-h-[144px]"
                         x-bind:style="posStyle('{{ $node['id'] }}')"
                         x-bind:class="selected === '{{ $node['id'] }}' ? 'rw-node-selected' : ''"
                         @mousedown.stop="startDrag($event, '{{ $node['id'] }}')"
@@ -62,9 +62,9 @@
                                 <x-railway.resource-icon :type="$node['icon']" size="w-4 h-4" />
                             </span>
                             <div class="min-w-0 flex-1">
-                                <div class="text-[15px] font-semibold text-rw-text truncate leading-tight">{{ $node['name'] }}</div>
+                                <div class="text-[16px] font-semibold text-rw-text truncate leading-6">{{ $node['name'] }}</div>
                                 @if ($node['subtitle'])
-                                    <div class="text-xs text-rw-subtle truncate leading-tight mt-0.5">{{ $node['subtitle'] }}</div>
+                                    <div class="text-sm text-rw-subtle truncate leading-5">{{ $node['subtitle'] }}</div>
                                 @endif
                             </div>
                         </div>
@@ -75,8 +75,8 @@
                                     x-data="{ start: {{ (int) ($node['deployStartedMs'] ?? 0) }}, elapsed: '0:00' }"
                                     x-init="const f = () => { const s = Math.max(0, Math.floor((Date.now() - start) / 1000)); elapsed = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }; f(); setInterval(f, 1000);">
                                     <span class="rw-dot rw-dot-degraded"></span>
-                                    <span class="text-[13px] text-warning font-medium">{{ $node['deployStatus'] === 'building' ? 'Building' : 'Queued' }}</span>
-                                    <span class="text-[13px] text-rw-subtle font-mono tabular-nums" x-text="elapsed"></span>
+                                    <span class="text-sm font-medium" style="color: var(--color-rw-warn);">{{ $node['deployStatus'] === 'building' ? 'Building' : 'Queued' }}</span>
+                                    <span class="text-sm text-rw-subtle font-mono tabular-nums" x-text="elapsed"></span>
                                 </div>
                             @else
                                 <x-railway.status-dot :status="$node['status']" />

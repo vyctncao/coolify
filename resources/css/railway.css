@@ -28,11 +28,16 @@
     background-size: 20px 20px;
 }
 
-/* A resource node card on the canvas. */
+/* A resource node card on the canvas.
+ |
+ | Measured off Railway's own rendered service card (the template deploy page
+ | mounts the real component): 288x144, 12px radius, 24px padding, gray-100
+ | surface on a gray-200 hairline. Flat at rest -- Railway leans on the
+ | surface step for separation, not a drop shadow. */
 @utility rw-node {
-    @apply relative flex flex-col rounded-[10px] border bg-rw-panel px-4 py-4 select-none;
+    @apply relative flex flex-col rounded-xl border p-6 select-none;
+    background: var(--color-rw-elevated);
     border-color: var(--color-rw-border);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
     transition: border-color 150ms var(--ease-rw), box-shadow 150ms var(--ease-rw), transform 60ms var(--ease-rw);
 }
 
