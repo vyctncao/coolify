@@ -709,3 +709,13 @@ it('guards hover states and outlines focus the way Railway does', function () {
     expect($css)->toContain(':focus-visible')
         ->and($css)->toContain('outline: 2px solid var(--color-rw-accent)');
 });
+
+it('lays the dashboard grid out on Railway\'s container', function () {
+    // Measured off dashboard.png: three 376px cards on a 16px gap sum to
+    // exactly 1160px, confirming --container-rw is the *content* width with
+    // the gutter outside it. Rendering this measures 1160 / 16 / 376.
+    Livewire::test(Projects::class)
+        ->assertOk()
+        ->assertSee('gap-4', escape: false)
+        ->assertSee('calc(var(--container-rw) + 3rem)', escape: false);
+});

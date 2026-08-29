@@ -8,7 +8,10 @@
         <x-railway.dashboard-topbar />
 
         <main class="flex-1 min-h-0 overflow-y-auto rw-scroll">
-            <div class="mx-auto px-6 pt-14 pb-16" style="max-width: var(--container-rw);">
+            {{-- Railway's 1160px container is the *content* width: its grid measures
+                 38px in from each side of the frame and spans a full 1160. So the
+                 gutter sits outside the token, not inside it. --}}
+            <div class="mx-auto px-6 pt-14 pb-16" style="max-width: calc(var(--container-rw) + 3rem);">
                 {{-- Workspace header --}}
                 <div class="flex items-center justify-between gap-4 mb-8">
                     <livewire:railway.team-switcher />
@@ -32,7 +35,9 @@
 
                 {{-- Project grid --}}
                 @if ($groups->isNotEmpty())
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {{-- 3 columns of 376px on a 16px gap sums to exactly 1160px, which is
+                         Railway's container width — so the gap is 16, not 20. --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         @foreach ($groups as $project)
                             <a href="{{ $project['url'] ?? route('project.edit', ['project_uuid' => $project['uuid']]) }}" wire:navigate
                                 class="rw-card hover:rw-card-hover group/card flex flex-col p-6 min-h-[185px]">
