@@ -209,6 +209,56 @@ class ServicePanel extends Component
         }
     }
 
+    /**
+     * Re-run a past deployment's commit. Railway exposes this per row via
+     * `canRedeploy`; only applications carry a commit to re-run.
+     */
+    public function redeployCommit(?string $commit = null): void
+    {
+        $this->deployCommit($commit, rollback: false);
+    }
+
+    /**
+     * Roll back to a past deployment's commit (Railway's `canRollback`).
+     * Coolify models this as a deployment of that commit with the rollback
+     * flag set, which skips the rebuild and reuses the existing image.
+     */
+    public function rollbackTo(?string $commit = null): void
+    {
+        $this->deployCommit($commit, rollback: true);
+    }
+
+    protected function deployCommit(?string $commit, bool $rollback): void
+    {
+        if (! $this->resource instanceof Application || blank($commit)) {
+            return;
+        }
+
+        try {
+            $this->authorize('deploy', $this->resource);
+
+            $result = queue_application_deployment(
+                application: $this->resource,
+                deployment_uuid: new_public_id(),
+                commit: $commit,
+                rollback: $rollback,
+                force_rebuild: false,
+            );
+
+            if (($result['status'] ?? '') === 'queue_full') {
+                $this->dispatch('error', 'Deployment queue is full.');
+
+                return;
+            }
+
+            $this->dispatch('success', $rollback ? 'Rollback queued.' : 'Redeploy queued.');
+            $this->loadResource();
+            $this->dispatch('deploymentQueued');
+        } catch (\Throwable $e) {
+            $this->dispatch('error', 'Could not deploy: '.$e->getMessage());
+        }
+    }
+
     public function restart(): void
     {
         if (! $this->resource) {
@@ -549,6 +599,7 @@ class ServicePanel extends Component
                 'id' => $d->id,
                 'status' => (string) $d->status,
                 'commit' => $d->commit ? substr($d->commit, 0, 7) : null,
+                'fullCommit' => $d->commit ?: null,
                 'message' => $d->commit_message ?: 'Manual deployment',
                 'via' => $d->git_type ? 'via '.ucfirst((string) $d->git_type) : ($d->is_webhook ? 'via Webhook' : ($d->is_api ? 'via API' : 'via Coolify')),
                 'ago' => optional($d->created_at)->diffForHumans(),

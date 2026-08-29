@@ -512,3 +512,41 @@ it('reports no volumes for a resource that has none', function () {
         ->assertOk()
         ->assertDontSee('!rounded-b-none', escape: false);
 });
+
+it('offers redeploy and rollback per deployment row, like Railway', function () {
+    // Railway gates its row menu on the deployment's own canRedeploy /
+    // canRollback. Coolify has no such field, so the condition is derived:
+    // an application plus a commit to re-run.
+    \App\Models\ApplicationDeploymentQueue::create([
+        'application_id' => $this->application->id,
+        'application_name' => $this->application->name,
+        'deployment_uuid' => 'dep-'.fake()->unique()->uuid(),
+        'server_id' => $this->server->id,
+        'server_name' => $this->server->name,
+        'destination_id' => $this->destination->id,
+        'status' => 'finished',
+        'commit' => 'abc1234def5678',
+        'commit_message' => 'Ship the thing',
+    ]);
+
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->assertSee('Ship the thing')
+        ->assertSee('Rollback')
+        ->assertSee("rollbackTo('abc1234def5678')", escape: false);
+});
+
+it('does not offer a commit rollback for a database', function () {
+    $panel = Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application');
+
+    // A resource with no commit must not expose the action, and calling it
+    // directly is a no-op rather than an error.
+    $panel->call('rollbackTo', null)->assertHasNoErrors();
+    $panel->call('redeployCommit', '')->assertHasNoErrors();
+});

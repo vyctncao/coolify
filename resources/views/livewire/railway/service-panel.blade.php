@@ -123,6 +123,7 @@
                                         </div>
                                         <button type="button" wire:click="openDeploymentLogs({{ $activeDeployment['id'] }})"
                                             class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
+                                        <x-railway.deployment-row-menu :deployment="$activeDeployment" :is-application="$isApplication" />
                                     </div>
                                     <div class="flex items-center gap-2 px-4 py-2.5 border-t" style="border-color: var(--color-rw-green-300);">
                                         <svg class="w-4 h-4 shrink-0" style="color: var(--color-rw-online-bright);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
@@ -145,6 +146,7 @@
                                         </div>
                                         <button type="button" wire:click="openDeploymentLogs({{ $d['id'] }})"
                                             class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
+                                        <x-railway.deployment-row-menu :deployment="$d" :is-application="$isApplication" />
                                     </div>
                                 @endforeach
                             @endif
