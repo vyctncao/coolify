@@ -550,3 +550,20 @@ it('does not offer a commit rollback for a database', function () {
     $panel->call('rollbackTo', null)->assertHasNoErrors();
     $panel->call('redeployCommit', '')->assertHasNoErrors();
 });
+
+it('positions the service panel where Railway positions it', function () {
+    // Measured off four Railway docs screenshots, all agreeing: the panel top
+    // sits 24px below the 72px header (canvas shows through the gap and the
+    // top-left corner is rounded), and its left edge is pinned 400px from the
+    // viewport rather than the panel being a fixed-width drawer.
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->assertSee('calc(var(--spacing-rw-header) + 24px)', escape: false)
+        ->assertSee('lg:left-[400px]', escape: false)
+        ->assertSee('rounded-tl-xl', escape: false)
+        // The old fixed-width drawer must be gone.
+        ->assertDontSee('max-w-[680px]', escape: false);
+});

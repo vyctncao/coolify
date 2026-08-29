@@ -5,9 +5,15 @@
         <div x-show="open" x-transition.opacity class="fixed left-0 right-0 bottom-0 z-40"
             style="top: var(--spacing-rw-header); background: rgba(0,0,0,0.32);" @click="open = false"></div>
 
-        {{-- Slide-over --}}
-        <aside class="fixed bottom-0 right-0 z-50 w-full max-w-[680px] flex flex-col rw-panel rounded-tl-xl overflow-hidden transition-transform duration-200 ease-out"
-            style="top: var(--spacing-rw-header);"
+        {{-- Slide-over.
+             Measured off Railway's own panel across four screenshots: its top
+             sits 24px below the 72px header (canvas shows through the gap, and
+             the top-left corner is rounded), and its left edge is pinned 400px
+             from the viewport regardless of window width — so the panel grows
+             with the window rather than being a fixed-width drawer. Below lg it
+             takes the full width, since a 400px gutter leaves nothing usable. --}}
+        <aside class="fixed bottom-0 right-0 left-0 lg:left-[400px] z-50 flex flex-col rw-panel rounded-tl-xl overflow-hidden transition-transform duration-200 ease-out"
+            style="top: calc(var(--spacing-rw-header) + 24px);"
             :class="open ? 'translate-x-0' : 'translate-x-full'"
             @wheel.stop @mousedown.stop @contextmenu.stop>
 
