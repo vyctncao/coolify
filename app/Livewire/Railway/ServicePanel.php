@@ -58,6 +58,28 @@ class ServicePanel extends Component
     /** @var array<int, string> */
     public array $variableKeys = [];
 
+    /**
+     * Variables shaped for Railway's compact list.
+     *
+     * @var array<int, array{id:int,key:string,masked:string,hidden:bool,provided:bool}>
+     */
+    public array $variables = [];
+
+    /** IDs the user has explicitly revealed this session. */
+    public array $revealedVariables = [];
+
+    /** Whether the collapsible "provided variables" group is expanded. */
+    public bool $showProvidedVariables = false;
+
+    /** Whether to drop from Railway's list into Coolify's full editor. */
+    public bool $showRawVariables = false;
+
+    public string $newVariableKey = '';
+
+    public string $newVariableValue = '';
+
+    public bool $addingVariable = false;
+
     /** @var array<string, string> */
     public array $links = [];
 
@@ -111,7 +133,7 @@ class ServicePanel extends Component
     #[On('openServicePanel')]
     public function openPanel(string $uuid, string $kind, ?string $name = null): void
     {
-        $this->reset(['deployments', 'variableKeys', 'fqdns', 'links', 'activeDeploymentId']);
+        $this->reset(['deployments', 'variableKeys', 'variables', 'revealedVariables', 'showProvidedVariables', 'showRawVariables', 'newVariableKey', 'newVariableValue', 'addingVariable', 'fqdns', 'links', 'activeDeploymentId']);
         $this->selectedUuid = $uuid;
         $this->kind = $kind;
         $this->name = $name;
@@ -544,15 +566,134 @@ class ServicePanel extends Component
             if (! method_exists($resource, 'environment_variables')) {
                 return;
             }
-            $this->variableKeys = $resource->environment_variables()
-                ->orderBy('key')
-                ->pluck('key')
-                ->filter()
+
+            $records = $resource->environment_variables()->orderBy('key')->get();
+
+            $this->variableKeys = $records->pluck('key')->filter()->values()->all();
+
+            // Railway renders one dense row per variable with the value masked
+            // and the platform-provided ones folded into a collapsed group.
+            $this->variables = $records
+                ->filter(fn ($variable) => filled($variable->key))
+                ->map(fn ($variable) => [
+                    'id' => $variable->id,
+                    'key' => $variable->key,
+                    'masked' => $this->maskVariable((string) $variable->value),
+                    'hidden' => (bool) $variable->is_shown_once,
+                    'provided' => (bool) $variable->is_coolify,
+                ])
                 ->values()
                 ->all();
         } catch (\Throwable $e) {
             $this->variableKeys = [];
+            $this->variables = [];
         }
+    }
+
+    /**
+     * Railway shows a fixed-width run of dots rather than a length-accurate
+     * mask, so a value's length can't be read off the row.
+     */
+    protected function maskVariable(string $value): string
+    {
+        return $value === '' ? '' : str_repeat('•', 7);
+    }
+
+    public function toggleProvidedVariables(): void
+    {
+        $this->showProvidedVariables = ! $this->showProvidedVariables;
+    }
+
+    public function toggleRawVariables(): void
+    {
+        $this->showRawVariables = ! $this->showRawVariables;
+    }
+
+    public function startAddingVariable(): void
+    {
+        $this->addingVariable = true;
+        $this->newVariableKey = '';
+        $this->newVariableValue = '';
+    }
+
+    public function cancelAddingVariable(): void
+    {
+        $this->addingVariable = false;
+        $this->newVariableKey = '';
+        $this->newVariableValue = '';
+    }
+
+    /**
+     * Reveal a single variable's value. Variables Coolify marks as shown-once
+     * stay masked: the stored value is not recoverable for display.
+     */
+    public function revealVariable(int $id): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        $variable = $this->resource->environment_variables()->whereKey($id)->first();
+        if (! $variable || $variable->is_shown_once) {
+            return;
+        }
+
+        $this->revealedVariables[$id] = (string) $variable->value;
+    }
+
+    public function hideVariable(int $id): void
+    {
+        unset($this->revealedVariables[$id]);
+    }
+
+    public function addVariable(): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        $this->validate([
+            'newVariableKey' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z_][A-Za-z0-9_]*$/'],
+            'newVariableValue' => ['nullable', 'string'],
+        ], [
+            'newVariableKey.regex' => 'Use letters, digits and underscores, starting with a letter or underscore.',
+        ]);
+
+        $exists = $this->resource->environment_variables()
+            ->where('key', $this->newVariableKey)
+            ->exists();
+
+        if ($exists) {
+            $this->addError('newVariableKey', 'That variable already exists.');
+
+            return;
+        }
+
+        $this->resource->environment_variables()->create([
+            'key' => $this->newVariableKey,
+            'value' => $this->newVariableValue,
+        ]);
+
+        $this->cancelAddingVariable();
+        $this->loadVariables($this->resource);
+        $this->dispatch('success', 'Variable added.');
+    }
+
+    public function deleteVariable(int $id): void
+    {
+        if (! $this->resource) {
+            return;
+        }
+
+        $variable = $this->resource->environment_variables()->whereKey($id)->first();
+        if (! $variable || $variable->is_coolify) {
+            return;
+        }
+
+        $variable->delete();
+        unset($this->revealedVariables[$id]);
+        $this->loadVariables($this->resource);
+        $this->dispatch('success', 'Variable removed.');
     }
 
     protected function buildLinks(): void

@@ -307,3 +307,81 @@ it('suppresses the Coolify promo popups on Railway pages', function () {
         ->assertOk()
         ->assertSet('showPromos', true);
 });
+
+it('lists service variables at Railway density with values masked', function () {
+    $this->application->environment_variables()->createMany([
+        ['key' => 'API_TOKEN', 'value' => 'super-secret-value'],
+        ['key' => 'SERVICE_FQDN_APP', 'value' => 'https://example.test'],
+    ]);
+
+    $panel = Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application');
+
+    $variables = collect($panel->get('variables'));
+
+    // Railway masks every value with a fixed-width run of dots, so a value's
+    // length can't be inferred from the row.
+    expect($variables->firstWhere('key', 'API_TOKEN'))
+        ->toMatchArray(['masked' => '•••••••', 'provided' => false]);
+
+    // SERVICE_-prefixed variables are Coolify-provided and fold into the
+    // collapsed group, mirroring Railway's "provided variables" row.
+    expect($variables->firstWhere('key', 'SERVICE_FQDN_APP')['provided'])->toBeTrue();
+
+    $panel->assertDontSee('super-secret-value');
+});
+
+it('adds and removes a service variable from the Railway list', function () {
+    $panel = Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->set('newVariableKey', 'FEATURE_FLAG')
+        ->set('newVariableValue', 'on')
+        ->call('addVariable')
+        ->assertHasNoErrors();
+
+    $this->assertDatabaseHas('environment_variables', [
+        'key' => 'FEATURE_FLAG',
+        'resourceable_id' => $this->application->id,
+    ]);
+
+    $created = $this->application->environment_variables()->where('key', 'FEATURE_FLAG')->firstOrFail();
+
+    $panel->call('deleteVariable', $created->id);
+
+    $this->assertDatabaseMissing('environment_variables', ['id' => $created->id]);
+});
+
+it('rejects a variable key that is not a valid environment name', function () {
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->set('newVariableKey', '9-not valid')
+        ->call('addVariable')
+        ->assertHasErrors('newVariableKey');
+
+    expect($this->application->environment_variables()->where('key', '9-not valid')->exists())->toBeFalse();
+});
+
+it('never reveals a shown-once variable', function () {
+    $secret = $this->application->environment_variables()->create([
+        'key' => 'ONE_TIME_TOKEN',
+        'value' => 'do-not-display',
+        'is_shown_once' => true,
+    ]);
+
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->call('revealVariable', $secret->id)
+        ->assertSet('revealedVariables', [])
+        ->assertDontSee('do-not-display');
+});

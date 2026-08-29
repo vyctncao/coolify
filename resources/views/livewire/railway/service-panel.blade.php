@@ -96,17 +96,22 @@
                                     ->reject(fn ($d) => $activeDeployment && $d['id'] === $activeDeployment['id'])
                                     ->values();
 
-                                $chipFor = fn (array $d) => match ($d['status']) {
-                                    'finished' => ['COMPLETED', 'rw-badge-success'],
-                                    'failed' => ['FAILED', 'rw-badge-danger'],
-                                    'in_progress' => ['BUILDING', 'rw-badge-warn'],
-                                    'queued' => ['QUEUED', 'rw-badge-info'],
-                                    default => ['REMOVED', ''],
+                                // Railway's chips, verified against its API vocabulary
+                                // (SUCCESS / FAILED / INITIALIZING / REMOVED / SKIPPED).
+                                // Note a superseded success reads REMOVED, not COMPLETED —
+                                // only the deployment currently serving traffic is COMPLETED.
+                                $chipFor = fn (array $d, bool $isActive = false) => match (true) {
+                                    $d['status'] === 'finished' && $isActive => ['COMPLETED', 'rw-badge-success'],
+                                    $d['status'] === 'finished' => ['REMOVED', ''],
+                                    $d['status'] === 'failed' => ['FAILED', 'rw-badge-danger'],
+                                    $d['status'] === 'in_progress' => ['BUILDING', 'rw-badge-warn'],
+                                    $d['status'] === 'queued' => ['QUEUED', 'rw-badge-info'],
+                                    default => ['SKIPPED', ''],
                                 };
                             @endphp
 
                             @if ($activeDeployment)
-                                @php [$chipLabel, $chipClass] = $chipFor($activeDeployment); @endphp
+                                @php [$chipLabel, $chipClass] = $chipFor($activeDeployment, true); @endphp
                                 <div class="rw-deploy-active mb-4">
                                     <div class="flex items-center gap-3 px-4 py-3">
                                         <span class="rw-badge {{ $chipClass }} shrink-0">{{ $chipLabel }}</span>
@@ -154,11 +159,120 @@
                             @break
 
                         @case('variables')
-                            {{-- Real Coolify environment-variable editor, embedded inline (add/edit/reveal/delete). --}}
                             @if ($resource)
-                                <div class="rw-embed">
-                                    <livewire:project.shared.environment-variable.all :resource="$resource" :key="'rw-vars-'.$selectedUuid" />
+                                @php
+                                    // Railway splits these: the service's own variables in a
+                                    // dense list, and the platform-provided ones folded away.
+                                    $ownVariables = collect($variables)->reject(fn ($v) => $v['provided'])->values();
+                                    $providedVariables = collect($variables)->filter(fn ($v) => $v['provided'])->values();
+                                @endphp
+
+                                <div class="flex items-center justify-between gap-3 mb-4">
+                                    <h3 class="text-[15px] font-semibold text-rw-text">
+                                        {{ $ownVariables->count() }} Service {{ $ownVariables->count() === 1 ? 'Variable' : 'Variables' }}
+                                    </h3>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" wire:click="toggleRawVariables"
+                                            class="inline-flex items-center gap-1.5 text-[13px] font-medium rw-focus {{ $showRawVariables ? 'text-rw-text' : 'text-rw-subtle hover:text-rw-text' }}">
+                                            <span class="font-mono">{}</span> RAW Editor
+                                        </button>
+                                        <button type="button" wire:click="startAddingVariable"
+                                            class="inline-flex items-center gap-1.5 rounded-md border px-2.5 h-8 text-[13px] font-medium rw-press rw-focus"
+                                            style="border-color: var(--color-rw-accent); color: var(--color-rw-accent-hover);">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                            New Variable
+                                        </button>
+                                    </div>
                                 </div>
+
+                                @if ($showRawVariables)
+                                    {{-- Coolify's full editor: multiline, build/runtime flags and
+                                         shared variables have no equivalent in Railway's list. --}}
+                                    <div class="rw-embed">
+                                        <livewire:project.shared.environment-variable.all :resource="$resource" :key="'rw-vars-'.$selectedUuid" />
+                                    </div>
+                                @else
+                                    @if ($providedVariables->isNotEmpty())
+                                        <button type="button" wire:click="toggleProvidedVariables"
+                                            class="flex items-center gap-2 w-full py-2.5 text-[13px] text-rw-subtle hover:text-rw-text border-b rw-focus"
+                                            style="border-color: var(--color-rw-border);">
+                                            <svg class="w-3.5 h-3.5 transition-transform {{ $showProvidedVariables ? 'rotate-90' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+                                            {{ $providedVariables->count() }} Coolify Provided {{ $providedVariables->count() === 1 ? 'Variable' : 'Variables' }} available
+                                        </button>
+
+                                        @if ($showProvidedVariables)
+                                            @foreach ($providedVariables as $variable)
+                                                <div class="flex items-center gap-4 py-2.5 border-b" style="border-color: var(--color-rw-border);">
+                                                    <span class="font-mono text-[12px] text-rw-subtle truncate w-[46%] shrink-0">{{ $variable['key'] }}</span>
+                                                    <span class="font-mono text-[12px] text-rw-faint truncate flex-1">{{ $variable['masked'] }}</span>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    @endif
+
+                                    @if ($addingVariable)
+                                        <div class="rw-card p-4 my-3">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label class="block text-xs text-rw-subtle mb-1.5">Key</label>
+                                                    <input type="text" wire:model="newVariableKey" placeholder="MY_VARIABLE"
+                                                        class="rw-input focus:rw-input-focus font-mono" />
+                                                    @error('newVariableKey')
+                                                        <div class="mt-1.5 text-xs" style="color: var(--color-rw-danger-bright);">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-rw-subtle mb-1.5">Value</label>
+                                                    <input type="text" wire:model="newVariableValue" placeholder="value"
+                                                        class="rw-input focus:rw-input-focus font-mono" />
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 mt-3">
+                                                <button type="button" wire:click="addVariable"
+                                                    class="rw-btn-primary hover:rw-btn-primary-hover rw-press rw-focus">Add</button>
+                                                <button type="button" wire:click="cancelAddingVariable"
+                                                    class="rw-btn hover:rw-btn-hover rw-press rw-focus">Cancel</button>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @forelse ($ownVariables as $variable)
+                                        <div class="group/var flex items-center gap-4 py-2.5 border-b" style="border-color: var(--color-rw-border);">
+                                            <span class="font-mono text-[12px] text-rw-muted truncate w-[46%] shrink-0">{{ $variable['key'] }}</span>
+
+                                            <span class="font-mono text-[12px] text-rw-subtle truncate flex-1">
+                                                {{ $revealedVariables[$variable['id']] ?? $variable['masked'] }}
+                                            </span>
+
+                                            <div class="flex items-center gap-1 shrink-0">
+                                                @if (! $variable['hidden'])
+                                                    @if (array_key_exists($variable['id'], $revealedVariables))
+                                                        <button type="button" wire:click="hideVariable({{ $variable['id'] }})"
+                                                            class="rw-icon-btn hover:rw-icon-btn-hover rw-press-sm rw-focus !w-7 !h-7" title="Hide value">
+                                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.9 4.24A9 9 0 0 1 12 4c7 0 10 8 10 8a18 18 0 0 1-2.16 3.19M6.6 6.6A18 18 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.6M2 2l20 20"/></svg>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" wire:click="revealVariable({{ $variable['id'] }})"
+                                                            class="rw-icon-btn hover:rw-icon-btn-hover rw-press-sm rw-focus !w-7 !h-7" title="Reveal value">
+                                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                        </button>
+                                                    @endif
+                                                @endif
+
+                                                <button type="button" wire:click="deleteVariable({{ $variable['id'] }})"
+                                                    wire:confirm="Delete {{ $variable['key'] }}?"
+                                                    class="rw-icon-btn hover:rw-icon-btn-hover rw-press-sm rw-focus !w-7 !h-7 opacity-0 group-hover/var:opacity-100"
+                                                    title="Delete variable">
+                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        @unless ($addingVariable)
+                                            <div class="text-[13px] text-rw-subtle py-8 text-center">No service variables yet.</div>
+                                        @endunless
+                                    @endforelse
+                                @endif
                             @endif
                             @break
 
