@@ -581,3 +581,32 @@ it('spaces the service panel header to Railway\'s measured rhythm', function () 
         ->assertSee('pt-12 pb-8', escape: false)
         ->assertSee('text-[28px]', escape: false);
 });
+
+it('sizes deployment rows to Railway\'s measured heights', function () {
+    // From the 1:1 screenshot: the active card's main row and each history row
+    // are 78px (≈20px padding around a 36px two-line block) and the success
+    // sub-row is 37px. Rendering this markup measures 76 / 78 / 36.
+    \App\Models\ApplicationDeploymentQueue::create([
+        'application_id' => $this->application->id,
+        'application_name' => $this->application->name,
+        'deployment_uuid' => 'row-'.fake()->unique()->uuid(),
+        'server_id' => $this->server->id,
+        'server_name' => $this->server->name,
+        'destination_id' => $this->destination->id,
+        'status' => 'finished',
+        'commit' => 'deadbeefcafe1234',
+        'commit_message' => 'Measured row',
+    ]);
+
+    Livewire::test(ServicePanel::class, [
+        'environment' => $this->environment,
+        'project' => $this->project,
+    ])
+        ->dispatch('openServicePanel', uuid: $this->application->uuid, kind: 'application')
+        ->assertSee('Measured row')
+        // 20px padding around the two-line block gives the 78px row.
+        ->assertSee('px-4 py-5', escape: false)
+        // Rows sit on Railway's 14px body / 12px meta scale, not 13/11.
+        ->assertSee('text-sm text-rw-text truncate', escape: false)
+        ->assertSee('text-xs text-rw-subtle truncate', escape: false);
+});

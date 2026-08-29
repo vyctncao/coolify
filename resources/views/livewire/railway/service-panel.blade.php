@@ -119,11 +119,11 @@
                             @if ($activeDeployment)
                                 @php [$chipLabel, $chipClass] = $chipFor($activeDeployment, true); @endphp
                                 <div class="rw-deploy-active mb-4">
-                                    <div class="flex items-center gap-3 px-4 py-3">
+                                    <div class="flex items-center gap-3 px-4 py-5">
                                         <span class="rw-badge {{ $chipClass }} shrink-0">{{ $chipLabel }}</span>
                                         <div class="min-w-0 flex-1">
-                                            <div class="text-[13px] text-rw-text truncate">{{ $activeDeployment['message'] }}</div>
-                                            <div class="text-[11px] text-rw-subtle truncate">
+                                            <div class="text-sm text-rw-text truncate">{{ $activeDeployment['message'] }}</div>
+                                            <div class="text-xs text-rw-subtle truncate">
                                                 {{ $activeDeployment['ago'] }} {{ $activeDeployment['via'] }}@if ($activeDeployment['commit']) · {{ $activeDeployment['commit'] }}@endif
                                             </div>
                                         </div>
@@ -131,7 +131,7 @@
                                             class="rw-btn hover:rw-btn-hover !h-7 !px-2.5 !text-[12px] shrink-0">View logs</button>
                                         <x-railway.deployment-row-menu :deployment="$activeDeployment" :is-application="$isApplication" />
                                     </div>
-                                    <div class="flex items-center gap-2 px-4 py-2.5 border-t" style="border-color: var(--color-rw-green-300);">
+                                    <div class="flex items-center gap-2 px-4 py-2 border-t" style="border-color: var(--color-rw-green-300);">
                                         <svg class="w-4 h-4 shrink-0" style="color: var(--color-rw-online-bright);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
                                         <span class="text-[13px] text-rw-text">Deployment successful</span>
                                     </div>
@@ -142,11 +142,11 @@
                                 <div class="rw-section-label mb-2">History</div>
                                 @foreach ($historyDeployments as $d)
                                     @php [$chipLabel, $chipClass] = $chipFor($d); @endphp
-                                    <div class="rw-card hover:rw-card-hover flex items-center gap-3 px-4 py-3 mb-2">
+                                    <div class="rw-card hover:rw-card-hover flex items-center gap-3 px-4 py-5 mb-4">
                                         <span class="rw-badge {{ $chipClass }} shrink-0">{{ $chipLabel }}</span>
                                         <div class="min-w-0 flex-1">
-                                            <div class="text-[13px] text-rw-text truncate">{{ $d['message'] }}</div>
-                                            <div class="text-[11px] text-rw-subtle truncate">
+                                            <div class="text-sm text-rw-text truncate">{{ $d['message'] }}</div>
+                                            <div class="text-xs text-rw-subtle truncate">
                                                 {{ $d['ago'] }} {{ $d['via'] }}@if ($d['commit']) · {{ $d['commit'] }}@endif
                                             </div>
                                         </div>
