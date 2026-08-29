@@ -610,3 +610,28 @@ it('sizes deployment rows to Railway\'s measured heights', function () {
         ->assertSee('text-sm text-rw-text truncate', escape: false)
         ->assertSee('text-xs text-rw-subtle truncate', escape: false);
 });
+
+it('renders project settings as an inset card with an icon nav, like Railway', function () {
+    // Measured off the 1:1 project_settings screenshot: Railway renders
+    // settings as a card over the canvas (top 97px, matching the service
+    // panel) with its own 99px header and close affordance, and a 48px-pitch
+    // nav whose active item is tinted violet-600 rather than pilled.
+    // Rendering this markup reproduces 97 / 99 / 48 / rgb(166,103,228) and
+    // 42px form controls.
+    $settings = Livewire::test(Settings::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])->assertOk();
+
+    $settings->assertSee('Project Settings')
+        ->assertSee('height: 99px', escape: false)
+        ->assertSee('h-12', escape: false)          // 48px nav pitch
+        ->assertSee('h-[42px]', escape: false)      // Railway's h-md control
+        ->assertSee('Close settings')
+        // Icon nav: every section carries a glyph, and the pill is gone.
+        ->assertDontSee('rw-nav-item-active', escape: false);
+
+    foreach (['General', 'Environments', 'Members', 'Danger'] as $section) {
+        $settings->assertSee($section);
+    }
+});

@@ -19,17 +19,36 @@
     <x-railway.project-chrome :project="$project" :environment="$environment"
         :projects="$allProjects" :environments="$allEnvironments" active="settings">
 
-        <div class="h-full overflow-y-auto rw-scroll">
-            <div class="max-w-5xl mx-auto px-8 py-8">
-                <h1 class="text-[24px] font-semibold text-rw-text mb-8">Project Settings</h1>
+        {{-- Railway renders project settings as a card inset over the canvas,
+             not as a full page: 24px in from the left, top aligned with the
+             service panel at 97px, its own header row with a close affordance,
+             and a 48px-pitch icon nav down the left of the body. --}}
+        <div class="h-full overflow-hidden rw-canvas-grid">
+            <div class="mx-6 rounded-xl border flex flex-col overflow-hidden"
+                style="border-color: var(--color-rw-border); background: var(--color-rw-bg); height: calc(100% - 25px); margin-top: 25px;">
 
+                <div class="flex items-center justify-between px-8 border-b shrink-0"
+                    style="border-color: var(--color-rw-border); height: 99px;">
+                    <h1 class="text-[24px] font-semibold text-rw-text">Project Settings</h1>
+                    <a href="{{ route('railway.canvas', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid]) }}"
+                        wire:navigate class="rw-icon-btn hover:rw-icon-btn-hover rw-press-sm rw-focus" title="Close settings">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </a>
+                </div>
+
+                <div class="flex-1 min-h-0 overflow-y-auto rw-scroll px-8 py-8">
                 <div class="flex gap-10">
                     {{-- Sub-nav --}}
-                    <nav class="w-48 shrink-0 flex flex-col gap-0.5">
+                    <nav class="w-52 shrink-0 flex flex-col">
                         @foreach ($sections as $key => $label)
+                            @php $isActive = $section === $key; @endphp
                             <button type="button" wire:click="setSection('{{ $key }}')"
-                                class="rw-nav-item hover:rw-nav-item-hover {{ $section === $key ? 'rw-nav-item-active' : '' }} {{ $key === 'danger' && $section !== 'danger' ? 'text-rw-danger' : '' }}">
-                                {{ $label }}
+                                class="flex items-center gap-3 h-12 px-2 -mx-2 rounded-md text-left text-[15px] rw-focus
+                                    {{ $isActive ? 'text-rw-text font-medium' : 'text-rw-subtle hover:text-rw-text' }}">
+                                <x-railway.settings-icon :name="$key"
+                                    class="w-[18px] h-[18px] shrink-0 {{ $isActive ? '' : 'opacity-80' }}"
+                                    style="{{ $isActive ? 'color: var(--color-rw-accent-hover)' : '' }}" />
+                                <span class="truncate">{{ $label }}</span>
                             </button>
                         @endforeach
                     </nav>
@@ -42,16 +61,16 @@
                                     <div>
                                         <div class="text-[16px] font-semibold text-rw-text mb-4">Project Info</div>
                                         <label class="block text-[12px] text-rw-muted mb-1.5">Name</label>
-                                        <input type="text" wire:model="projectName" class="w-full rounded-md border px-3 h-9 text-[13px] text-rw-text bg-transparent focus:outline-none" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);" />
+                                        <input type="text" wire:model="projectName" class="w-full rounded-md border px-3 h-[42px] text-sm text-rw-text bg-transparent focus:outline-none" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);" />
                                         @error('projectName') <div class="text-[12px] text-rw-danger mt-1">{{ $message }}</div> @enderror
                                     </div>
                                     <div>
                                         <label class="block text-[12px] text-rw-muted mb-1.5">Description</label>
-                                        <input type="text" wire:model="projectDescription" placeholder="Optional description of this project" class="w-full rounded-md border px-3 h-9 text-[13px] text-rw-text bg-transparent focus:outline-none placeholder:text-rw-subtle" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);" />
+                                        <input type="text" wire:model="projectDescription" placeholder="Optional description of this project" class="w-full rounded-md border px-3 h-[42px] text-sm text-rw-text bg-transparent focus:outline-none placeholder:text-rw-subtle" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);" />
                                     </div>
                                     <div>
                                         <label class="block text-[12px] text-rw-muted mb-1.5">Project ID</label>
-                                        <div class="flex items-center gap-2 rounded-md border px-3 h-9" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);">
+                                        <div class="flex items-center gap-2 rounded-md border px-3 h-[42px]" style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);">
                                             <span class="text-[13px] font-mono text-rw-muted truncate flex-1">{{ $project->uuid }}</span>
                                             <button type="button" onclick="copyToClipboard('{{ $project->uuid }}')" class="rw-icon-btn hover:rw-icon-btn-hover w-6 h-6">
                                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
@@ -92,10 +111,10 @@
                                             <div class="text-[13px] font-semibold text-rw-text">Invite a member</div>
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 <input type="email" wire:model="inviteEmail" wire:keydown.enter="inviteMember(false)" placeholder="name@example.com"
-                                                    class="flex-1 rounded-md border px-3 h-9 text-[13px] text-rw-text bg-transparent focus:outline-none placeholder:text-rw-subtle"
+                                                    class="flex-1 rounded-md border px-3 h-[42px] text-sm text-rw-text bg-transparent focus:outline-none placeholder:text-rw-subtle"
                                                     style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);" />
                                                 <select wire:model="inviteRole"
-                                                    class="rounded-md border px-3 h-9 text-[13px] text-rw-text focus:outline-none"
+                                                    class="rounded-md border px-3 h-[42px] text-sm text-rw-text focus:outline-none"
                                                     style="border-color: var(--color-rw-border); background: var(--color-rw-elevated);">
                                                     <option value="member">Member</option>
                                                     <option value="admin">Admin</option>
@@ -218,6 +237,8 @@
                                 </div>
                         @endswitch
                     </div>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
