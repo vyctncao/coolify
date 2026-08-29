@@ -685,3 +685,27 @@ it('binds the command palette to the meta and control K chords', function () {
         // And reachable by pointer from the header, not keyboard-only.
         ->assertSee('open-railway-palette', escape: false);
 });
+
+it('does not leave dead rail styling behind', function () {
+    // The rail was removed when its items moved into the header; its
+    // utilities should have gone with it rather than lingering.
+    $css = file_get_contents(resource_path('css/railway.css'));
+
+    expect($css)->not->toContain('rw-rail-item');
+});
+
+it('guards hover states and outlines focus the way Railway does', function () {
+    $css = file_get_contents(resource_path('css/railway.css'));
+
+    // Railway wraps every hover rule so a tap on a touch device does not
+    // leave the control stuck in its hover state.
+    foreach (['rw-node-hover', 'rw-btn-hover', 'rw-card-hover', 'rw-tab-hover'] as $utility) {
+        $block = \Illuminate\Support\Str::between($css, "@utility {$utility} {", "\n}");
+        expect($block)->toContain('@media (hover: hover) and (pointer: fine)');
+    }
+
+    // Focus is outlined once at the shell rather than per control, so it
+    // cannot drift as controls are added.
+    expect($css)->toContain(':focus-visible')
+        ->and($css)->toContain('outline: 2px solid var(--color-rw-accent)');
+});

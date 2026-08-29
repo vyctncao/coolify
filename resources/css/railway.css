@@ -42,8 +42,10 @@
 }
 
 @utility rw-node-hover {
-    border-color: var(--color-rw-border-strong);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px -12px rgba(0, 0, 0, 0.8);
+    @media (hover: hover) and (pointer: fine) {
+        border-color: var(--color-rw-border-strong);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px -12px rgba(0, 0, 0, 0.8);
+    }
 }
 
 @utility rw-node-selected {
@@ -67,8 +69,10 @@
 }
 
 @utility rw-btn-hover {
-    background: var(--color-rw-hover);
-    border-color: var(--color-rw-border-strong);
+    @media (hover: hover) and (pointer: fine) {
+        background: var(--color-rw-hover);
+        border-color: var(--color-rw-border-strong);
+    }
 }
 
 @utility rw-btn-primary {
@@ -78,7 +82,9 @@
 }
 
 @utility rw-btn-primary-hover {
-    background: var(--color-rw-accent-hover);
+    @media (hover: hover) and (pointer: fine) {
+        background: var(--color-rw-accent-hover);
+    }
 }
 
 @utility rw-icon-btn {
@@ -87,8 +93,10 @@
 }
 
 @utility rw-icon-btn-hover {
-    background: var(--color-rw-hover);
-    color: var(--color-rw-text);
+    @media (hover: hover) and (pointer: fine) {
+        background: var(--color-rw-hover);
+        color: var(--color-rw-text);
+    }
 }
 
 /* Status dot ----------------------------------------------------------- */
@@ -123,22 +131,6 @@
     color: var(--color-rw-muted);
 }
 
-/* Left icon rail item (inside a project). */
-@utility rw-rail-item {
-    @apply flex items-center justify-center w-9 h-9 rounded-lg text-rw-muted cursor-pointer;
-    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw);
-}
-
-@utility rw-rail-item-hover {
-    background: var(--color-rw-hover);
-    color: var(--color-rw-text);
-}
-
-@utility rw-rail-item-active {
-    background: var(--color-rw-elevated);
-    color: var(--color-rw-text);
-}
-
 /* Dashboard sidebar nav item. */
 @utility rw-nav-item {
     @apply flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-rw-muted cursor-pointer;
@@ -146,8 +138,10 @@
 }
 
 @utility rw-nav-item-hover {
-    background: var(--color-rw-hover);
-    color: var(--color-rw-text);
+    @media (hover: hover) and (pointer: fine) {
+        background: var(--color-rw-hover);
+        color: var(--color-rw-text);
+    }
 }
 
 @utility rw-nav-item-active {
@@ -169,7 +163,9 @@
 }
 
 @utility rw-menu-item-hover {
-    background: var(--color-rw-hover);
+    @media (hover: hover) and (pointer: fine) {
+        background: var(--color-rw-hover);
+    }
 }
 
 /* Dashed connection edge (SVG stroke helper). */
@@ -191,8 +187,10 @@
 }
 
 @utility rw-card-hover {
-    border-color: var(--color-rw-border-strong);
-    background: var(--color-rw-elevated);
+    @media (hover: hover) and (pointer: fine) {
+        border-color: var(--color-rw-border-strong);
+        background: var(--color-rw-elevated);
+    }
 }
 
 /* Tabs ----------------------------------------------------------------- */
@@ -206,7 +204,9 @@
 }
 
 @utility rw-tab-hover {
-    color: var(--color-rw-text);
+    @media (hover: hover) and (pointer: fine) {
+        color: var(--color-rw-text);
+    }
 }
 
 @utility rw-tab-active {
@@ -454,4 +454,24 @@
 
 @utility rw-palette-push {
     animation: rw-palette-squish-push 150ms ease-out;
+}
+
+/* ------------------------------------------------------------------------
+ | Keyboard focus, applied once at the root.
+ |
+ | Railway outlines standalone controls on keyboard focus (2px accent, offset)
+ | rather than ringing them. Tagging ~145 individual controls with a utility
+ | would guarantee drift, so it is scoped to the Railway shell instead: every
+ | control inside gets it, and only when focus is keyboard-driven.
+ |
+ | Inputs are excluded — they carry their own border+ring treatment via
+ | rw-input-focus, which reads better on a filled field than an outline.
+ */
+.rw-root :is(button, a[href], [role="button"], summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid var(--color-rw-accent);
+    outline-offset: 2px;
+}
+
+.rw-root :is(input, textarea, select):focus-visible {
+    outline: none;
 }
