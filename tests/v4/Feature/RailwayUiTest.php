@@ -2,6 +2,7 @@
 
 use App\Livewire\LayoutPopups;
 use App\Livewire\Railway\Canvas;
+use App\Livewire\Railway\Logs as RailwayLogs;
 use App\Livewire\Railway\Projects;
 use App\Livewire\Railway\ServicePanel;
 use App\Livewire\Railway\Settings;
@@ -384,4 +385,74 @@ it('never reveals a shown-once variable', function () {
         ->call('revealVariable', $secret->id)
         ->assertSet('revealedVariables', [])
         ->assertDontSee('do-not-display');
+});
+
+it('renders the Railway log explorer toolbar and column header', function () {
+    $logs = Livewire::test(RailwayLogs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSet('range', '15m')
+        ->assertSee('Last 15 min');
+
+    // The Timestamp / Service / Replica / Message header belongs to the table,
+    // so it only appears once there is something to tabulate.
+    $logs->set('rows', [[
+        'ts' => 'Aug 28 10:00:00',
+        'sortKey' => '2026-08-28T10:00:00.000000',
+        'service' => 'staging-app',
+        'replica' => 'abc12345',
+        'message' => 'Listening on port 3000',
+        'level' => 'info',
+    ]])
+        ->assertSee('Timestamp')
+        ->assertSee('Service')
+        ->assertSee('Replica')
+        ->assertSee('Message')
+        ->assertSee('staging-app');
+});
+
+it('changes the log time range and ignores an unknown one', function () {
+    $logs = Livewire::test(RailwayLogs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ]);
+
+    $logs->call('setRange', '1h')->assertSet('range', '1h');
+
+    // An unrecognised range must not be written through to the component.
+    $logs->call('setRange', 'last-decade')->assertSet('range', '1h');
+});
+
+it('filters log rows without re-reading the containers', function () {
+    // The filter runs over already-fetched rows at render time; typing must not
+    // trigger another SSH round-trip.
+    $rows = [
+        ['ts' => 'Aug 28 10:00:00', 'sortKey' => '2026-08-28T10:00:00.000000', 'service' => 'staging-app', 'replica' => 'abc12345', 'message' => 'Listening on port 3000', 'level' => 'info'],
+        ['ts' => 'Aug 28 10:00:01', 'sortKey' => '2026-08-28T10:00:01.000000', 'service' => 'staging-app', 'replica' => 'abc12345', 'message' => 'Error: connection refused', 'level' => 'error'],
+    ];
+
+    Livewire::test(RailwayLogs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->set('rows', $rows)
+        ->assertSee('Listening on port 3000')
+        ->set('filter', 'connection refused')
+        ->assertSee('Error: connection refused')
+        ->assertDontSee('Listening on port 3000');
+});
+
+it('shows the empty state when no container produced a line', function () {
+    // The seeded server is not functional, so the fan-out yields nothing —
+    // which is the ordinary case, not an error.
+    Livewire::test(RailwayLogs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSet('rows', [])
+        ->assertSet('error', null)
+        ->assertSee('No logs in this time range');
 });
