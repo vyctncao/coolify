@@ -124,7 +124,37 @@ final class RailwayResourceMapper
             'href' => self::href($resource, $projectUuid, $environmentUuid),
             'deployStatus' => $deploy['status'] ?? null,
             'deployStartedMs' => $deploy['startedMs'] ?? null,
+            'volumes' => self::volumes($resource),
         ];
+    }
+
+    /**
+     * Persistent volumes attached to a resource. Railway draws these as a
+     * sub-card fused to the bottom of the service node (its "Postgres disk"),
+     * labelled by mount path.
+     *
+     * @return array<int, array{name: string, mount: string}>
+     */
+    public static function volumes(Model $resource): array
+    {
+        if (! method_exists($resource, 'persistentStorages')) {
+            return [];
+        }
+
+        try {
+            return $resource->persistentStorages()
+                ->get()
+                ->map(fn ($volume) => [
+                    'name' => (string) ($volume->name ?? ''),
+                    'mount' => (string) ($volume->mount_path ?? ''),
+                ])
+                ->filter(fn (array $volume) => $volume['mount'] !== '' || $volume['name'] !== '')
+                ->take(3)
+                ->values()
+                ->all();
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     /**

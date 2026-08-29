@@ -50,11 +50,12 @@
                 @foreach ($nodes as $node)
                     {{-- Width must be a class, not an inline style: x-bind:style
                          replaces the style attribute wholesale on every render. --}}
-                    <div class="absolute rw-node hover:rw-node-hover w-[288px] min-h-[144px]"
+                    <div class="absolute w-[288px]"
                         x-bind:style="posStyle('{{ $node['id'] }}')"
-                        x-bind:class="selected === '{{ $node['id'] }}' ? 'rw-node-selected' : ''"
                         @mousedown.stop="startDrag($event, '{{ $node['id'] }}')"
                         @click="openNode('{{ $node['id'] }}', '{{ $node['kind'] }}')">
+                    <div class="rw-node hover:rw-node-hover w-full min-h-[144px] {{ ! empty($node['volumes']) ? '!rounded-b-none' : '' }}"
+                        x-bind:class="selected === '{{ $node['id'] }}' ? 'rw-node-selected' : ''">
                         {{-- Header --}}
                         <div class="flex items-center gap-2.5">
                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-md shrink-0"
@@ -82,6 +83,20 @@
                                 <x-railway.status-dot :status="$node['status']" />
                             @endif
                         </div>
+                    </div>
+
+                    {{-- Attached volumes. Railway fuses these to the bottom of
+                         the node as a darker sub-card labelled by mount path
+                         (its "Postgres disk"). --}}
+                    @foreach ($node['volumes'] ?? [] as $volume)
+                        <div class="flex items-center gap-2.5 w-full px-6 py-3 border border-t-0 rounded-b-xl select-none"
+                            style="border-color: var(--color-rw-border); background: var(--color-rw-surface);">
+                            <svg class="w-4 h-4 shrink-0 text-rw-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>
+                            </svg>
+                            <span class="text-sm text-rw-subtle truncate">{{ $volume['mount'] ?: $volume['name'] }}</span>
+                        </div>
+                    @endforeach
                     </div>
                 @endforeach
             </div>

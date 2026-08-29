@@ -475,3 +475,40 @@ it('renders canvas nodes at Railway\'s measured card geometry', function () {
         ->assertSee('text-[16px]', escape: false)
         ->assertDontSee('text-base', escape: false);
 });
+
+it('fuses attached volumes to the bottom of a canvas node', function () {
+    // Railway draws a resource's persistent volumes as a darker sub-card
+    // welded to the bottom of the service node, labelled by mount path.
+    $this->application->persistentStorages()->create([
+        'name' => 'app-data',
+        'mount_path' => '/var/lib/data',
+    ]);
+
+    $node = RailwayResourceMapper::toNode(
+        $this->application->fresh(),
+        $this->project->uuid,
+        $this->environment->uuid
+    );
+
+    expect($node['volumes'])->toBe([['name' => 'app-data', 'mount' => '/var/lib/data']]);
+
+    Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSee('/var/lib/data')
+        // The node's own bottom corners square off so the two read as one card.
+        ->assertSee('!rounded-b-none', escape: false);
+});
+
+it('reports no volumes for a resource that has none', function () {
+    expect(RailwayResourceMapper::volumes($this->application))->toBe([]);
+
+    Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertDontSee('!rounded-b-none', escape: false);
+});
