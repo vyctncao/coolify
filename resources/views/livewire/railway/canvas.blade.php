@@ -89,7 +89,11 @@
                          the node as a darker sub-card labelled by mount path
                          (its "Postgres disk"). --}}
                     @foreach ($node['volumes'] ?? [] as $volume)
-                        <div class="flex items-center gap-2.5 w-full px-6 py-3 border border-t-0 rounded-b-xl select-none"
+                        {{-- Railway's volume card measures 288x72, but 24px of
+                             that is top padding tucked behind the service card
+                             it hangs from. Stacked flush the visible row is
+                             48px, which is what this matches. --}}
+                        <div class="flex items-center gap-2.5 w-full h-12 px-6 border border-t-0 rounded-b-xl select-none"
                             style="border-color: var(--color-rw-border); background: var(--color-rw-surface);">
                             <svg class="w-4 h-4 shrink-0 text-rw-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>
