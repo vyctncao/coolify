@@ -68,20 +68,23 @@
 
             @if (! empty($visibleRows))
                 {{-- Column header --}}
-                <div class="flex items-center gap-4 px-4 py-2 border-b text-xs font-medium text-rw-subtle shrink-0"
+                {{-- Column geometry measured off Railway's 2x log_explorer
+                     screenshot: labels start at x 20 / 140 / 219 / 289, so the
+                     row is padded 20px and the fixed columns are 120 / 79 / 70. --}}
+                <div class="flex items-center px-5 py-2 border-b text-xs font-medium text-rw-subtle shrink-0"
                     style="border-color: var(--color-rw-border);">
-                    <span class="w-[132px] shrink-0" x-show="columns.timestamp">Timestamp</span>
-                    <span class="w-[150px] shrink-0 truncate" x-show="columns.service">Service</span>
-                    <span class="w-[96px] shrink-0" x-show="columns.replica">Replica</span>
+                    <span class="w-[120px] shrink-0" x-show="columns.timestamp">Timestamp</span>
+                    <span class="w-[79px] shrink-0 truncate" x-show="columns.service">Service</span>
+                    <span class="w-[70px] shrink-0" x-show="columns.replica">Replica</span>
                     <span class="flex-1">Message</span>
                 </div>
 
-                <div class="flex-1 min-h-0 overflow-auto rw-scroll font-mono text-[12px] leading-[1.55]">
+                <div class="flex-1 min-h-0 overflow-auto rw-scroll font-mono text-[12px] leading-5">
                     @foreach ($visibleRows as $row)
-                        <div class="group/logline flex items-start gap-4 px-4 py-[3px] hover:bg-rw-hover">
-                            <span class="w-[132px] shrink-0 text-rw-faint tabular-nums" x-show="columns.timestamp">{{ $row['ts'] }}</span>
-                            <span class="w-[150px] shrink-0 truncate text-rw-subtle" x-show="columns.service">{{ $row['service'] }}</span>
-                            <span class="w-[96px] shrink-0 truncate text-rw-faint" x-show="columns.replica">{{ $row['replica'] }}</span>
+                        <div class="group/logline flex items-start px-5 hover:bg-rw-hover">
+                            <span class="w-[120px] shrink-0 text-rw-faint tabular-nums" x-show="columns.timestamp">{{ $row['ts'] }}</span>
+                            <span class="w-[79px] shrink-0 truncate text-rw-subtle" x-show="columns.service">{{ $row['service'] }}</span>
+                            <span class="w-[70px] shrink-0 truncate text-rw-faint" x-show="columns.replica">{{ $row['replica'] }}</span>
                             <span class="flex-1 whitespace-pre-wrap break-all {{ $row['level'] === 'error' ? '' : 'text-rw-text' }}"
                                 @if ($row['level'] === 'error') style="color: var(--color-rw-danger-bright);" @endif>{{ $row['message'] }}</span>
                         </div>

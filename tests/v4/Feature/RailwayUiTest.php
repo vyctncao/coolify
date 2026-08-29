@@ -635,3 +635,24 @@ it('renders project settings as an inset card with an icon nav, like Railway', f
         $settings->assertSee($section);
     }
 });
+
+it('lays out log columns to Railway\'s measured geometry', function () {
+    // log_explorer.png is a 2x render; halving it puts the column labels at
+    // x 20 / 140 / 219 / 289 and the log lines on a 20px pitch. So the row is
+    // padded 20px with fixed 120 / 79 / 70 columns and no inter-column gap.
+    // Rendering this markup measures 20 / [120,79,70] / 20 — all exact.
+    Livewire::test(RailwayLogs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->set('rows', [[
+            'ts' => 'Aug 28 10:00:00', 'sortKey' => '2026-08-28T10:00:00.000000',
+            'service' => 'staging-app', 'replica' => 'abc12345',
+            'message' => 'Listening on port 3000', 'level' => 'info',
+        ]])
+        ->assertSee('w-[120px]', escape: false)
+        ->assertSee('w-[79px]', escape: false)
+        ->assertSee('w-[70px]', escape: false)
+        ->assertSee('px-5', escape: false)
+        ->assertSee('leading-5', escape: false);
+});
