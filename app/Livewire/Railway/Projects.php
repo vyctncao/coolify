@@ -51,6 +51,9 @@ class Projects extends Component
 
         return view('livewire.railway.projects', [
             'groups' => $groups,
+            // The command palette jumps between projects, so it needs the
+            // models rather than the flattened card view-models.
+            'allProjects' => $projects,
         ]);
     }
 }

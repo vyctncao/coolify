@@ -656,3 +656,32 @@ it('lays out log columns to Railway\'s measured geometry', function () {
         ->assertSee('px-5', escape: false)
         ->assertSee('leading-5', escape: false);
 });
+
+it('offers a command palette over projects, services and pages', function () {
+    // Railway's cmdk palette, specced from its stylesheet: 420px list
+    // (h-commandPalette) and 14px/600 gray-500 group headings at mx-3 px-3 py-1.
+    Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSee('rw-palette', escape: false)
+        ->assertSee('Search projects, services and pages')
+        // Grouped over the team's projects, this environment's resources and
+        // the section routes.
+        ->assertSee('Projects')
+        ->assertSee('Services')
+        ->assertSee('staging-app')
+        ->assertSee('Mimic Internal');
+});
+
+it('binds the command palette to the meta and control K chords', function () {
+    Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertSee('keydown.window.meta.k.prevent', escape: false)
+        ->assertSee('keydown.window.ctrl.k.prevent', escape: false)
+        // And reachable by pointer from the header, not keyboard-only.
+        ->assertSee('open-railway-palette', escape: false);
+});

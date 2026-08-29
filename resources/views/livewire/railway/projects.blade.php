@@ -63,5 +63,7 @@
                 @endif
             </div>
         </main>
+
+        <x-railway.command-palette :projects="$allProjects" />
     </div>
 </div>

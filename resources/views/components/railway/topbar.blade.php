@@ -117,6 +117,11 @@
         @endforeach
     </nav>
 
+    <button type="button" @click="$dispatch('open-railway-palette')"
+        class="rw-icon-btn hover:rw-icon-btn-hover rw-press-sm rw-focus" title="Search (⌘K)">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+
     <div class="mx-1 w-px h-5" style="background: var(--color-rw-border);"></div>
 
     {{-- Agent is this fork's addition; kept as a quiet icon button so it

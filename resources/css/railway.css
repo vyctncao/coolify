@@ -412,3 +412,46 @@
         pointer-events: none;
     }
 }
+
+/* Command palette --------------------------------------------------------
+ |
+ | Railway's cmdk palette. Sizes and motion are taken from its stylesheet:
+ | `h-commandPalette` is 420px, group headings are 14px/600 in gray-500 at
+ | `mx-3 px-3 py-1`, and drilling in/out plays a 16px horizontal "squish"
+ | over 150ms.
+ */
+@utility rw-palette {
+    @apply w-full rounded-xl border overflow-hidden;
+    background: var(--color-rw-panel);
+    border-color: var(--color-rw-border);
+    box-shadow: var(--shadow-rw-lg), var(--ring-rw-inset);
+}
+
+@utility rw-palette-list {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+@utility rw-palette-heading {
+    @apply mx-3 px-3 py-1 text-sm font-semibold;
+    color: var(--color-rw-gray-500);
+}
+
+@utility rw-palette-item {
+    @apply flex items-center gap-3 mx-3 px-3 h-10 rounded-md text-sm text-rw-muted cursor-pointer;
+    transition: background 150ms var(--ease-rw), color 150ms var(--ease-rw);
+}
+
+@utility rw-palette-item-active {
+    background: var(--color-rw-hover);
+    color: var(--color-rw-text);
+}
+
+@keyframes rw-palette-squish-push {
+    from { transform: translateX(16px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+@utility rw-palette-push {
+    animation: rw-palette-squish-push 150ms ease-out;
+}

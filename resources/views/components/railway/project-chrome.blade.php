@@ -15,4 +15,17 @@
     <main class="relative flex-1 min-w-0 min-h-0 overflow-hidden">
         {{ $slot }}
     </main>
+
+    {{-- Railway's cmdk palette, on the same Cmd/Ctrl+K binding. --}}
+    @php
+        $paletteServices = \App\Support\RailwayResourceMapper::resourcesFor($environment)
+            ->map(fn ($r) => [
+                'name' => $r->name,
+                'subtitle' => \App\Support\RailwayResourceMapper::subtitle($r),
+                'href' => \App\Support\RailwayResourceMapper::href($r, $project->uuid, $environment->uuid),
+                'icon' => \App\Support\RailwayResourceMapper::iconType($r),
+            ])->all();
+    @endphp
+    <x-railway.command-palette :projects="$projects" :project="$project"
+        :environment="$environment" :services="$paletteServices" />
 </div>
