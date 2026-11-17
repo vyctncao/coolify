@@ -1,6 +1,10 @@
 <?php
 
+use App\Livewire\Project\DeleteProject;
+use App\Livewire\Project\Shared\Logs as ResourceLogs;
+use App\Livewire\Project\Shared\Metrics as ResourceMetrics;
 use App\Livewire\Railway\Canvas;
+use App\Livewire\Railway\Logs;
 use App\Livewire\Railway\Projects;
 use App\Livewire\Railway\ServicePanel;
 use App\Livewire\Railway\Settings;
@@ -67,6 +71,41 @@ it('renders the architecture canvas with the resource node', function () {
         ->assertSee('Online');
 });
 
+it('renders resource metrics on the Railway observability page', function () {
+    Livewire::test(\App\Livewire\Railway\Observability::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSee('staging-app')
+        ->assertSeeLivewire(ResourceMetrics::class);
+});
+
+it('renders environment resources on the Railway logs page', function () {
+    Livewire::test(Logs::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->assertOk()
+        ->assertSee('staging-app')
+        ->assertSeeLivewire(ResourceLogs::class);
+});
+
+it('loads resource logs when embedded outside a resource route', function () {
+    Livewire::test(ResourceLogs::class, ['resource' => $this->application])
+        ->assertSet('type', 'application')
+        ->assertSet('status', 'running:healthy');
+});
+
+it('embeds the real delete project action in Railway settings', function () {
+    Livewire::test(Settings::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ])
+        ->set('section', 'danger')
+        ->assertSeeLivewire(DeleteProject::class);
+});
+
 it('opens the service panel for a selected resource', function () {
     Livewire::test(ServicePanel::class, [
         'environment' => $this->environment,
@@ -78,6 +117,15 @@ it('opens the service panel for a selected resource', function () {
         ->assertSet('kind', 'application')
         ->assertSee('staging-app')
         ->assertSee('Deployments');
+});
+
+it('refreshes the canvas after a resource is deleted', function () {
+    $component = Livewire::test(Canvas::class, [
+        'project_uuid' => $this->project->uuid,
+        'environment_uuid' => $this->environment->uuid,
+    ]);
+
+    expect($component->instance()->getListeners())->toHaveKey('refreshCanvas', '$refresh');
 });
 
 it('persists a canvas node position', function () {

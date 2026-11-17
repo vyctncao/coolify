@@ -26,6 +26,7 @@ class Observability extends Component
 
         return view('livewire.railway.observability', [
             'services' => $services,
+            'resourcesByUuid' => $resources->keyBy('uuid'),
             'online' => $online,
             'total' => count($services),
         ]);

@@ -3,6 +3,7 @@
 namespace App\Livewire\Railway;
 
 use App\Livewire\Railway\Concerns\LoadsProjectContext;
+use App\Support\RailwayResourceMapper;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -18,6 +19,8 @@ class Logs extends Component
 
     public function render()
     {
-        return view('livewire.railway.logs');
+        return view('livewire.railway.logs', [
+            'resources' => RailwayResourceMapper::resourcesFor($this->environment),
+        ]);
     }
 }

@@ -163,6 +163,7 @@
 
             {{-- Database picker popup (native create) --}}
             <div x-show="activeCreate === 'database'" x-cloak x-transition.opacity.duration.100ms
+                x-data="{ databaseSearch: '' }"
                 @keydown.escape.window="activeCreate = null"
                 class="absolute inset-0 z-[55] flex items-start justify-center pt-24"
                 @click.self="activeCreate = null" @wheel.stop @mousedown.stop @contextmenu.stop>
@@ -177,11 +178,12 @@
                         <button type="button" @click="activeCreate = null" class="rw-icon-btn hover:rw-icon-btn-hover shrink-0">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
                         </button>
-                        <input type="text" placeholder="Choose a database…" class="flex-1 bg-transparent text-[14px] text-rw-text placeholder:text-rw-subtle focus:outline-none border-0 p-0" />
+                        <input type="text" x-model="databaseSearch" placeholder="Choose a database…" class="flex-1 bg-transparent text-[14px] text-rw-text placeholder:text-rw-subtle focus:outline-none border-0 p-0" />
                     </div>
                     <div class="p-1.5 max-h-[420px] overflow-y-auto scrollbar" wire:loading.class="opacity-50">
                         @foreach ($dbTypes as [$k, $label])
                             <button type="button" wire:click="createDatabase('{{ $k }}')" @click="activeCreate = null"
+                                x-show="'{{ strtolower($label) }}'.includes(databaseSearch.toLowerCase())"
                                 class="rw-menu-item hover:rw-menu-item-hover !py-2.5 gap-3 w-full text-left">
                                 <span class="inline-flex items-center justify-center w-6 h-6 rounded-md shrink-0" style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
                                     <x-railway.resource-icon type="database" size="w-3.5 h-3.5" />

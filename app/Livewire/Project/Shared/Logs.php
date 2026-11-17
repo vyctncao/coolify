@@ -103,19 +103,24 @@ class Logs extends Component
             $this->serverContainers = [];
             $this->parameters = get_route_parameters();
             $this->query = request()->query();
-            if (data_get($this->parameters, 'application_uuid')) {
+            if (isset($this->resource)) {
+                $resource = getResourceByUuid($this->resource->uuid, data_get(auth()->user()->currentTeam(), 'id'));
+                if (is_null($resource)) {
+                    abort(404);
+                }
+                $this->resource = $resource;
+                $this->type = match (true) {
+                    $resource instanceof Application => 'application',
+                    $resource instanceof Service => 'service',
+                    default => 'database',
+                };
+                $this->status = $resource->status;
+                $this->loadResourceContainers();
+            } elseif (data_get($this->parameters, 'application_uuid')) {
                 $this->type = 'application';
                 $this->resource = Application::ownedByCurrentTeam()->where('uuid', $this->parameters['application_uuid'])->firstOrFail();
                 $this->status = $this->resource->status;
-                if ($this->resource->destination->server->isFunctional()) {
-                    $server = $this->resource->destination->server;
-                    $this->servers = $this->servers->push($server);
-                }
-                foreach ($this->resource->additional_servers as $server) {
-                    if ($server->isFunctional()) {
-                        $this->servers = $this->servers->push($server);
-                    }
-                }
+                $this->loadResourceContainers();
             } elseif (data_get($this->parameters, 'database_uuid')) {
                 $this->type = 'database';
                 $resource = getResourceByUuid($this->parameters['database_uuid'], data_get(auth()->user()->currentTeam(), 'id'));
@@ -153,6 +158,42 @@ class Logs extends Component
         } catch (\Exception $e) {
             return handleError($e, $this);
         }
+    }
+
+    private function loadResourceContainers(): void
+    {
+        if ($this->resource instanceof Application) {
+            if ($this->resource->destination->server->isFunctional()) {
+                $this->servers->push($this->resource->destination->server);
+            }
+            foreach ($this->resource->additional_servers as $server) {
+                if ($server->isFunctional()) {
+                    $this->servers->push($server);
+                }
+            }
+
+            return;
+        }
+
+        if ($this->resource instanceof Service) {
+            $this->resource->applications()->get()->each(function ($application) {
+                $this->containers->push(data_get($application, 'name').'-'.data_get($this->resource, 'uuid'));
+            });
+            $this->resource->databases()->get()->each(function ($database) {
+                $this->containers->push(data_get($database, 'name').'-'.data_get($this->resource, 'uuid'));
+            });
+            if ($this->resource->server->isFunctional()) {
+                $this->servers->push($this->resource->server);
+            }
+
+            return;
+        }
+
+        if ($this->resource->destination->server->isFunctional()) {
+            $this->servers->push($this->resource->destination->server);
+        }
+        $this->container = $this->resource->uuid;
+        $this->containers->push($this->container);
     }
 
     public function render()

@@ -59,7 +59,7 @@
                 <div class="rw-node !p-5">
                     <div class="text-[14px] font-semibold text-rw-text mb-4">Services</div>
                     @forelse ($services as $service)
-                        <a href="{{ $service['href'] }}" wire:navigate class="flex items-center gap-3 py-2.5 border-b hover:bg-rw-hover -mx-2 px-2 rounded" style="border-color: var(--color-rw-border);">
+                        <div class="flex items-center gap-3 py-2.5 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
                             <span class="inline-flex items-center justify-center w-7 h-7 rounded-md shrink-0" style="background: var(--color-rw-elevated); border: 1px solid var(--color-rw-border);">
                                 <x-railway.resource-icon :type="$service['icon']" size="w-4 h-4" />
                             </span>
@@ -70,7 +70,17 @@
                                 @endif
                             </div>
                             <x-railway.status-dot :status="$service['status']" />
-                        </a>
+                        </div>
+                        @if ($service['kind'] !== 'service')
+                            @php
+                                $resource = $resourcesByUuid->get($service['id']);
+                            @endphp
+                            @if ($resource)
+                                <div class="rw-embed py-4 border-b last:border-b-0" style="border-color: var(--color-rw-border);">
+                                    <livewire:project.shared.metrics :resource="$resource" :chartId="'rw-observability-'.$resource->uuid" :key="'rw-observability-'.$resource->uuid" />
+                                </div>
+                            @endif
+                        @endif
                     @empty
                         <div class="text-[13px] text-rw-subtle py-6 text-center">No services to observe yet.</div>
                     @endforelse

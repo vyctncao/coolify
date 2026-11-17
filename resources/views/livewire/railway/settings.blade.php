@@ -201,8 +201,10 @@
                                     @endforelse
                                 </div>
                                 <div class="text-[16px] font-semibold text-rw-text mb-1">Delete Project</div>
-                                <div class="text-[13px] text-rw-subtle mb-3">Permanently delete this project and all of its data. This can't be undone.</div>
-                                <a href="{{ route('project.edit', ['project_uuid' => $project->uuid]) }}" wire:navigate class="inline-flex items-center rounded-md px-3 h-9 text-[13px] font-medium text-white" style="background: var(--color-rw-danger);">Delete Project</a>
+                                <div class="text-[13px] text-rw-subtle mb-3">Permanently delete this project. All resources must be removed first.</div>
+                                <div class="rw-embed max-w-xl">
+                                    <livewire:project.delete-project :disabled="!$project->isEmpty()" :project_id="$project->id" :key="'rw-delete-project-'.$project->uuid" />
+                                </div>
                                 @break
 
                             @case('shared-variables')

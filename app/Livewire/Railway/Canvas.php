@@ -58,6 +58,7 @@ class Canvas extends Component
             "echo-private:team.{$teamId},ServiceChecked" => '$refresh',
             "echo-private:user.{$userId},DatabaseStatusChanged" => '$refresh',
             'deploymentQueued' => '$refresh',
+            'refreshCanvas' => '$refresh',
         ];
     }
 
